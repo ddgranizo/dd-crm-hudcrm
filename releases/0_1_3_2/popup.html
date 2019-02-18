@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <script src="thirds/angular.min.js" type="text/javascript"></script>
+    <script src="thirds/angular_animate.min.js" type="text/javascript"></script>
+    <script src="thirds/angular_aria.min.js" type="text/javascript"></script>
+    <script src="thirds/angular_material.js" type="text/javascript"></script>
+    <script src="thirds/angular_messages.min.js" type="text/javascript"></script>
+    <script src="thirds/angular_route.min.js" type="text/javascript"></script>
+    <script src="thirds/svg_assets_cache.js" type="text/javascript"></script>
+    <script src="popup.js" type="text/javascript"></script>
+
+    <link href="thirds/angular_material.min.css" rel="stylesheet" type="text/css" />
+    <link href="thirds/docs.material.css" rel="stylesheet" type="text/css" />
+
+</head>
+<body style="padding: 5px; width: 600px" ng-app="popupApp">
+    <div ng-controller="popup" layout="column" ng-cloak>
+        <md-toolbar class="md-warn">
+            <div class="md-toolbar-tools" layout-align="center center">
+                <h2 class="md-flex">Dynamics CRM HUDCRM {{log[0].version}}</h2>
+            </div>
+        </md-toolbar>
+        <md-content flex layout-padding>
+            <b><u>How to</u>: navigate to a Dynamics CRM instance, open a record and click again here!. The menu will show up automatically!</b>
+            <div ng-repeat="ver in log">
+                <p>
+                    <h3>{{ver.version}}</h3>
+                    <ul>
+                        <li ng-repeat="desc in ver.log">{{desc}}</li>
+                    </ul>
+                </p>
+            </div>
+            <!--<p ng-repeat="ver in log"><h3></h3></p>-->
+
+        </md-content>
+
+    </div>
+</body>
+</html>
