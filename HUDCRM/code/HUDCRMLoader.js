@@ -63,14 +63,9 @@ var HUDCRM_LOADER = {
                 var type = HUDCRM_LOADER.getTypeWindow(frames__[i]);
                 var currentUrl = frames__[i].parentElement.src;
 
-                //console.log(currentUrl);
-                //console.log(HUDCRM_LOADER.lastUrlLoaded);
-                //console.log(visibility);
-
                 if (ver__ == 5) {
                     //CRM 2011
                     if (display == "inline") {
-                        //var currentUrl = $(frames__[i].parentElement).attr('src');
                         if (HUDCRM_LOADER.lastUrlLoaded != currentUrl) {
                             HUDCRM_LOADER.lastUrlLoaded = currentUrl;
                             HUDCRM_LOADER.injectJSV2(frames__[i], visibility, type);
@@ -78,12 +73,9 @@ var HUDCRM_LOADER = {
                     }
 
                 } else {
-                    //CRM 2015 and 2016
+                    //CRM 2015 and 2016 and 365
                     if (visibility == "visible") {
-                        //var currentUrl = $(frames__[i].parentElement).attr('src');
-                        //if (HUDCRM_LOADER.lastUrlLoaded != currentUrl) {
                         HUDCRM_LOADER.injectJSV2(frames__[i], visibility, type);
-                        //}
                     }
                 }
             } catch (e) {
@@ -115,21 +107,12 @@ var HUDCRM_LOADER = {
     injectJSV2: function (__iframe, __visibility, __type) {
         HUDCRM_LOADER.injected = Array();
         HUDCRM_LOADER.loopCount = 0;
-        //console.log(__type);
         HUDCRM_LOADER.injectFormLooper(__iframe);
-        //if (__type == "form") {
-        //    HUDCRM_LOADER.injectFormLooper(__iframe);
-        //} else if (__type == "grid") {
-        //    //HUDCRM_LOADER.injectFormLooper(__iframe);
-        //} else if (__type == "dashboard") {
-        //    //HUDCRM_LOADER.injectFormLooper(__iframe);
-        //}
 
     },
     injectFormLooper: function (__iframe) {
         try {
             if (HUDCRM_LOADER.injected.length == SecondLevelFiles.length) {
-                //console.log("");//OK
                 return;
             }
             if (HUDCRM_LOADER.loopCount > 250) {
@@ -140,7 +123,6 @@ var HUDCRM_LOADER = {
             HUDCRM_LOADER.loopCount++;
             for (var i = 0; i < SecondLevelFiles.length; i++) {
                 var file = SecondLevelFiles[i];
-                //console.log(file);
                 var applyArray = file.apply.split('|');
                 if (applyArray.indexOf("form") > -1) {
                     var alreadyInjected = HUDCRM_LOADER.checkIfAlreadyInjected(file);
@@ -149,13 +131,11 @@ var HUDCRM_LOADER = {
                             //for css don't check dependencies
                             HUDCRM_LOADER.append(__iframe, HUDCRM_LOADER.getLinkObject(file.name, window[file.name]));
                             HUDCRM_LOADER.injected.push(file.order);
-                            //console.log("Injected: " + file.order);
                         } else {
                             var dependenciesAlreadyInjected = HUDCRM_LOADER.checkIfDependenciesAlreadyInjected(__iframe, file);
                             if (dependenciesAlreadyInjected) {
                                 HUDCRM_LOADER.append(__iframe, HUDCRM_LOADER.getScriptObject(file.name, window[file.name]));
                                 HUDCRM_LOADER.injected.push(file.order);
-                                //console.log("Injected: " + file.order);
                             }
                         }
                     }

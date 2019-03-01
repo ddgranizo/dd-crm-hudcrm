@@ -242,7 +242,6 @@ var HUDCRM_CODEMIRROR = {
         HUDCRM_ASYNC.SOAP(HUDCRM_ASYNC.getSchemaModifiedOnWebResource(__idWebResource),
                 "Execute",
                 function (response) {
-                    //var response = HUDCRM_ASYNC.getResponse(req);
                     var obj__ = HUDCRM_CODEMIRROR.deserializeWRResponse(response);
                     if (obj__.values["modifiedon"].toString() == HUDCRM_CODEMIRROR.wrModifiedOnSafetyControlVersion.toString()) {
                         var html__ = globalThe.editor.getValue();
@@ -413,61 +412,6 @@ var HUDCRM_CODEMIRROR = {
                function (e) {
                    console.log(e);
                });
-        //var request = ["<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">",
-        //                "<s:Body>",
-        //                "<Execute xmlns=\"http://schemas.microsoft.com/xrm/2011/Contracts/Services\" xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\">",
-        //                "<request i:type=\"b:RetrieveUnpublishedRequest\" xmlns:a=\"http://schemas.microsoft.com/xrm/2011/Contracts\" xmlns:b=\"http://schemas.microsoft.com/crm/2011/Contracts\">",
-        //                "<a:Parameters xmlns:c=\"http://schemas.datacontract.org/2004/07/System.Collections.Generic\">",
-        //                "<a:KeyValuePairOfstringanyType>",
-        //                "<c:key>Target</c:key>",
-        //                "<c:value i:type=\"a:EntityReference\">",
-        //                "<a:Id>" + __idWebResource + "</a:Id>",
-        //                "<a:KeyAttributes xmlns:d=\"http://schemas.microsoft.com/xrm/7.1/Contracts\" />",
-        //                "<a:LogicalName>webresource</a:LogicalName>",
-        //                "<a:Name i:nil=\"true\" />",
-        //                "<a:RowVersion i:nil=\"true\" />",
-        //                "</c:value>",
-        //                "</a:KeyValuePairOfstringanyType>",
-        //                "<a:KeyValuePairOfstringanyType>",
-        //                "<c:key>ColumnSet</c:key>",
-        //                "<c:value i:type=\"a:ColumnSet\">",
-        //                "<a:AllColumns>false</a:AllColumns>",
-        //                "<a:Columns xmlns:d=\"http://schemas.microsoft.com/2003/10/Serialization/Arrays\">",
-        //                "<d:string>name</d:string>",
-        //                "<d:string>content</d:string>",
-        //                "<d:string>webresourcetype</d:string>",
-        //                "<d:string>modifiedon</d:string>",
-        //                "</a:Columns>",
-        //                "</c:value>",
-        //                "</a:KeyValuePairOfstringanyType>",
-        //                "</a:Parameters>",
-        //                "<a:RequestId i:nil=\"true\" />",
-        //                "<a:RequestName>RetrieveUnpublished</a:RequestName>",
-        //                "</request>",
-        //                "</Execute>",
-        //                "</s:Body>",
-        //                "</s:Envelope>"].join("");
-        //var req = new XMLHttpRequest();
-        //req.open("POST", HUDCRM_ASYNC._getURLServiceSoap(), true);
-        //try { req.responseType = 'msxml-document' } catch (e) { }
-        //req.setRequestHeader("Accept", "application/xml, text/xml, */*");
-        //req.setRequestHeader("Content-Type", "text/xml; charset=utf-8");
-        //req.setRequestHeader("SOAPAction", "http://schemas.microsoft.com/xrm/2011/Contracts/Services/IOrganizationService/Execute");
-        //req.onreadystatechange = function () {
-        //    if (req.readyState == 4) {
-        //        req.onreadystatechange = null;
-        //        if (req.status == 200) {
-        //            var response = HUDCRM_ASYNC.getResponse(req);
-
-
-        //        }
-        //        else {
-
-        //        }
-        //    }
-        //};
-        //req.send(request);
-
 
     }, deserializeWRResponse: function (__response) {
 
@@ -481,8 +425,6 @@ var HUDCRM_CODEMIRROR = {
             var value__ = $($(attrArr__[i]).find('value')[0]).html();
             values__[key__] = value__;
             formattedValues__[key__] = value__;
-            //console.log(attrArr[i]);
-            //HUDCRM_CODEMIRROR.globalReq = attrArr[i];
         }
         var attrF__ = $(__response).find('FormattedValues')[0];
         var attrArrF__ = $(attrF__).find('KeyValuePairOfstringstring');
@@ -490,8 +432,7 @@ var HUDCRM_CODEMIRROR = {
             var key__ = $($(attrArrF__[i]).find('key')[0]).html();
             var value__ = $($(attrArrF__[i]).find('value')[0]).html();
             formattedValues__[key__] = value__;
-            //console.log(attrArr[i]);
-            //HUDCRM_CODEMIRROR.globalReq = attrArr[i];
+            
         }
         o__.values = values__;
         o__.formattedValues = formattedValues__;

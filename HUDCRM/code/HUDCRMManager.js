@@ -26,22 +26,6 @@ function startInitialing() {
 
                 $scope.cachedUSDConfigurations = null;
                 $scope.cachedUSDItems = null;
-                //$scope.cachedUSDHostedControlls = null;
-                //$scope.cachedUSDToolBars = null;
-                //$scope.cachedUSDActionCalls = null;
-                //$scope.cachedUSDEvents = null;
-                //$scope.cachedUSDSearchs = null;
-                //$scope.cachedUSDRoutingRules = null;
-                //$scope.cachedUSDSessionLines = null;
-                //$scope.cachedUSDAgentScripts = null;
-                //$scope.cachedUSDScriptlet = null;
-                //$scope.cachedUSDForms = null;
-                //$scope.cachedUSDOptions = null;
-                //$scope.cachedUSDUserSettings = null;
-                //$scope.cachedUSDFiles = null;
-
-                //operador ConditionOperator.Like + "%valor%"
-
 
                 $scope.editRecordHistory = Array();
                 $scope.hidden = false;
@@ -137,12 +121,9 @@ function startInitialing() {
                             });
                         }
                         $scope.loadingWebresources = false;
-                        //console.log($scope.webresources);
                     }, function (e) { console.error(e); });
 
-                    //console.log("loading metadata...");
                     crmRepositoryService.retrieveMetadataEntities().then(function (entities) {
-                        //console.log(entities);
                         $scope.loadingMetadataEntities = false;
                         var entitiesSort = HUDCRM_TOOL.sortArray(entities, "displayName");
                         $scope.metadataEntities = entitiesSort;
@@ -198,31 +179,25 @@ function startInitialing() {
                 $scope.tree = null;
                 $scope.attributes = null;
                 $scope.controlsInTabs = null;
-                //$scope.webResources = null;
                 $scope.setUiScanedObject = function (obj) {
                     $scope.tree = obj.tree;
                     $scope.attributes = obj.attributes;
                     $scope.controlsInTabs = obj.controlsInTabs;
                     $scope.webresources = obj.webresources;
-                    //console.log($scope.webresources);
-                    //$scope.loadAsyncWebresources();
                     $scope.loadAsync();
 
                 }
                 $scope.updateRequiredElement = function (element, type, required) {
                     HUDCRM_UI.setRequiredControl(element, type, required);
                     $scope.updatePropertyOfElementInTree(element, "required", $scope.tree, required);
-                    //console.log("required: " + element + "(" + type + ") -> " + required);
                 }
                 $scope.updateDisabledElement = function (element, type, disabled) {
                     HUDCRM_UI.setDisabledControl(element, type, disabled);
                     $scope.updatePropertyOfElementInTree(element, "disabled", $scope.tree, disabled);
-                    //console.log("disabled: " + element + " -> " + disabled);
                 }
                 $scope.updateVisibilityElement = function (element, type, visible) {
                     HUDCRM_UI.setVisibilityControl(element, type, visible);
                     $scope.updatePropertyOfElementInTree(element, "visible", $scope.tree, visible);
-                    //console.log("visibility: " + element + "(" + type + ") -> " + visible);
                 }
 
                 $scope.updateTabState = function (element, state) {
@@ -306,7 +281,6 @@ function startInitialing() {
                 $scope.currentModalUiControl = null;
                 $scope.currentModalUiControlType = null;
                 $scope.clickOnTile = function (nameTile, type) {
-                    //console.log("Clicked: " + nameTile + "(" + type + ")");
                     $scope.currentModalUiControl = nameTile;
                     $scope.currentModalUiControlType = type;
                     $scope.showUiElementInfoDialog($scope);
@@ -643,11 +617,6 @@ function startInitialing() {
                             '</div>',
                             '</md-toolbar>',
                             '<md-dialog-content style="width:400px; max-width:400px; max-height:810px;" >',
-                            //'<md-card>',
-                            //'<div><label>UI Shortcuts</label></div>',
-                            //'<div><md-button class="md-raised" style="width: auto;" ng-click="setAllVisible()">Set all controls visible</md-button></div>',
-                            //'<div><md-button class="md-raised" style="width: auto;" ng-click="setAllEnabled()">Set all controls enabled</md-button></div>',
-                            //'</md-card>',
                             '<md-card>',
                             '<div><label>Tabs</label></div>',
                             '<div><md-button ng-repeat="tab in tabs" class="md-raised"  style="width: auto;" ng-click="navigateTab(tab)">{{getLabel(tab)}}</md-button></div>',
@@ -720,9 +689,6 @@ function startInitialing() {
                             '<md-tabs md-dynamic-height md-border-bottom>',
                             '<md-tab label="entity info">',
                             '<md-card>',
-                            //'<div ng-repeat="property in entityProperties">',
-                            //'<input-text key="{{property.key}}" value="property.value" ></input-text>',
-                            //'</div>',
                             '<input-text key="Logical name" value="entityInfo.name" ></input-text>',
                             '<input-text key="Id" value="entityInfo.id" ></input-text>',
                             '<input-text key="Form type" value="entityInfo.formType" ></input-text>',
@@ -870,7 +836,6 @@ function startInitialing() {
                             '<div><md-button class="md-raised" style="width: auto;" ng-click="navigateParent(parent)">{{parent.label}}</md-button></div>',
                             '</div>',
                             '</md-card>',
-                            //'<md-divider></md-divider>',
                             '<md-card>',
                             '<div ng-repeat="property in properties">',
                             //Input text
@@ -1211,7 +1176,6 @@ function startInitialing() {
 
                                 }
 
-                                //console.log($scope.linkEntityAliases);
 
                                 var encoded = $scope.fetch.replace(/\</g, "&lt;").replace(/\>/g, "&gt;");
                                 var top = $scope.firstRecords ? $scope.numberOfTopRecords : 0;
@@ -1227,7 +1191,6 @@ function startInitialing() {
                                         console.error(e);
                                     }
 
-                                    //console.log(response);
                                 }, function (e) {
                                     $scope.loading = false;
                                     $scope.error = true;
@@ -1238,7 +1201,6 @@ function startInitialing() {
 
                             $scope.findValueOfAttributeInString = function (str, key) {
                                 var values = str.match(/name\=\"([A-Za-z0-9 _]*)\"/);
-                                //console.log(values);
                             }
 
                             $scope.cancel = function () {
@@ -1294,8 +1256,6 @@ function startInitialing() {
                                 $scope.showOnlyInSolution = newVal;
                             }
                             $scope.checkIfApply = function (webresource) {
-                                //console.log(showOnlyInSolution);
-                                //console.log(webresource);
                                 if (!$scope.showOnlyInSolution) {
                                     return true;
                                 }
@@ -1347,7 +1307,6 @@ function startInitialing() {
                             }
 
                             $scope.loadingWebresources = function () { return $mainScope.loadingWebresources; }
-                            //$scope.webresources = $mainScope.webresources;
 
                             $scope.cancel = function () {
                                 $mdDialog.cancel();
@@ -1375,7 +1334,6 @@ function startInitialing() {
                             '</div>',
 
                             '<div layout="row">',
-                            //'<div ng-if="!loadingRelated && !loadingWebresource && optionsRelated.lenght==0">No related found in CRM</div>',
                             '<md-button ng-show="referenced!=null" class="md-icon-button" ng-click="back()" aria-label="Back">',
                             '<md-icon md-svg-src="img/icons/ic_keyboard_arrow_left_black_24px.svg"></md-icon>',
                             '</md-button>',
@@ -2094,11 +2052,7 @@ function startInitialing() {
                                     return "systemuser";
                                 }
                                 return attribute["relatedEntity"];
-                                //console.log(attribute);
-                                //var logicalName = attribute["logicalName"];
-                                //var value = $scope.getFormattedValue(logicalName);
-                                //console.log(value);
-                                //return value["LogicalName"];
+                                
                             }
                             $scope.getIdForLookup = function (attribute) {
                                 var logicalName = attribute["logicalName"];
@@ -2223,27 +2177,10 @@ function startInitialing() {
                                 return attrs;
                             }
 
-                            //$scope.getNewValue = function(attribute) {
-                            //    var modification = $scope.getModification(attribute);
-                            //    var type = attribute["type"];
-                            //    if (type == "Lookup" || type == "Owner") {
-                            //        return modification["value"] + " (" + modification["id"] + ")";
-                            //    } else if (type == "Picklist") {
-                            //        return $scope.getDisplayValueOfOptionSet(attribute.options, modification["Value"]);
-                            //    } else if (type == "Boolean") {
-                            //        return $scope.getDisplayValueOfOptionSet(attribute.options, modification);
-                            //    } else if (type == "Money") {
-                            //        return modification["Value"];
-                            //    } else {
-                            //        return modification;
-                            //    }
-                            //}
-
 
                             $scope.getNewValueDisplay = function (attribute) {
                                 var modification = $scope.getModification(attribute);
-                                //console.log(attribute);
-                                //console.log(modification);
+                                
 
                                 if (typeof modification == 'undefined' || modification == null) {
                                     return null;
@@ -2331,9 +2268,7 @@ function startInitialing() {
                                 } else {
                                     var promise = crmRepositoryService.requestSearchForLookup(query, entity, primaryField);
                                     return promise.then(function (resutls) {
-                                        //var desr = HUDCRM_SOAP.deserializeRetrieveMultipleResponse(resutls.data, false);
                                         var options = getOptionsForLookupSearch(resutls, "id", "value", primaryField);
-                                        //console.log(desr);
                                         return options;
                                     }, function (e) { console.error(e); });
                                 }
@@ -2358,8 +2293,6 @@ function startInitialing() {
                             }
 
                             $scope.saveModification = function () {
-                                //console.log("save");
-                                //var attrName = $scope.currentAttribute["logicalName"];
                                 $scope.upsertValueInModifications($scope.currentAttribute, $scope.currentValue.val);
                                 console.log($scope.modifications);
                                 $scope.editing = false;
@@ -2367,41 +2300,10 @@ function startInitialing() {
 
                             $scope.buttonSaveDisabled = function () {
                                 return false;
-                                //TODO: doesn't work. When string and boolean, value and currentValue works OK. When picklist, I don't know why "value" gets "currrentValue" value when changed in select.
-                                //console.log("btn disabled");
-                                //if ($scope.currentAttribute==null || $scope.currentValue.val == null) {
-                                //if ($scope.currentAttribute==null ) {
-                                //    return true;
-                                //}
-                                //var value = $scope.value($scope.currentAttribute);
-                                //var currentValue = $scope.currentValue.val;
-                                ////console.log(value);
-                                ////console.log(currentValue);
-                                //if (currentValue==null && value!=null) {
-                                //    return false;
-                                //}
-                                //if (value==null && currentValue!=null) {
-                                //    return false;
-                                //}
-                                //if (value==null && currentValue==null) {
-                                //    return true;
-                                //}
-
-                                //var type = $scope.currentAttribute["type"];
-                                //if(type=="Lookup" || type=="Owner") {
-                                //    return value["Id"] == currentValue["Id"];
-                                //}else if (type=="Picklist") {
-                                //    //console.log(value["Value"]);
-                                //    //console.log(currentValue["Value"]);
-                                //    return false;
-                                //    return value["Value"] == currentValue["Value"];
-                                //}else{
-                                //    return value == currentValue;
-                                //}
+                                
                             }
 
                             $scope.upsertValueInModifications = function (attribute, newValue) {
-                                //console.log("upsert");
                                 var found = false;
                                 var attrName = attribute["logicalName"];
                                 for (var i = 0; i < $scope.modifications.length; i++) {
@@ -2417,14 +2319,12 @@ function startInitialing() {
 
                             $scope.cancelEdit = function () {
                                 $scope.cannotBeModified = false;
-                                //console.log("cancel edit");
                                 $scope.editing = false;
                                 $scope.currentAttribute = null;
                                 $scope.currentValue.val = null;
                             }
 
                             $scope.edit = function (attribute) {
-                                //console.log("edit");
                                 $scope.cannotBeModified = false;
                                 $scope.editing = true;
                                 $scope.currentAttribute = null;
@@ -2432,10 +2332,7 @@ function startInitialing() {
 
                                 $scope.currentAttribute = attribute;
                                 var val = $scope.value(attribute);
-                                //if (val==null) {
-                                //    $scope.cannotBeModified = true;
-                                //    return;
-                                //}
+                                
                                 var type = attribute["type"];
 
                                 if (type == "Uniqueidentifier" || type == "Virtual") {
@@ -2551,7 +2448,6 @@ function startInitialing() {
 
                             $scope.recordChanged = function (record) {
 
-                                //console.log("recordChanged");
                                 $scope.editing = false;
                                 $scope.modifications = Array();
                                 $scope.id = null;
@@ -2562,7 +2458,6 @@ function startInitialing() {
                                 }
 
                                 $scope.id = record["id"];
-                                //console.log("recordChanged:" + $scope.id + ", " + $scope.currentEntity);
                                 crmRepositoryService.retrieveRecord($scope.id, $scope.currentEntity).then(function (record) {
                                     $scope.currentRecord = record;
                                     $scope.loadingRecord = false;
@@ -2590,9 +2485,7 @@ function startInitialing() {
                                 } else {
                                     var promise = crmRepositoryService.requestSearchForLookup(query, $scope.currentEntity, $scope.currentEntityPrimaryField);
                                     return promise.then(function (resutls) {
-                                        //var desr = HUDCRM_SOAP.deserializeRetrieveMultipleResponse(resutls.data, false);
                                         var options = getOptionsForLookupSearch(resutls, "id", "value", $scope.currentEntityPrimaryField);
-                                        //console.log(desr);
                                         return options;
                                     }, function (e) { console.error(e); });
                                 }
@@ -2628,7 +2521,6 @@ function startInitialing() {
                                     return record["id"];
                                 }
                                 return record["value"];
-                                //console.log(record);
                             }
 
                             $scope.getLabelEntity = function (entity) {
@@ -2661,7 +2553,6 @@ function startInitialing() {
                                 }
                             }
                             $scope.loadedRelatedPrimaryField = function (relations, meta) {
-                                //console.log(meta);
                                 $scope.loadingRelatedPrimaryField = false;
                                 $scope.loadingRelatedRecords = true;
 
@@ -2693,7 +2584,6 @@ function startInitialing() {
                                 $scope.currentEntity = item["logicalName"];
                                 $scope.loadingPrimaryField = true;
                                 var entityName = $scope.currentEntity;
-                                //$scope.currentEntity = entity;
                                 var cached = $mainScope.getCachedMetadataFields(entityName);
                                 if (cached == null) {
                                     crmRepositoryService.retrieveMetadataFieldsEntity(entityName).then(function (fields) {
@@ -2711,7 +2601,6 @@ function startInitialing() {
                                 $scope.entityMetadata = entity;
                                 $scope.relations1n = entity["relations"].filter(function (relation) { return relation["type"] == "1:N" });
                                 $scope.loadingPrimaryField = false;
-                                //console.log($scope.currentEntityPrimaryField);
                             }
 
                             $scope.filterFnRelation = function (relation, query) {
@@ -2791,7 +2680,6 @@ function startInitialing() {
                                 //set visible the entity in the entitySelectPicklist
                                 var objEntity = $scope.getEntityObject(entityName);
                                 $scope.startingEntity = objEntity == null ? { "logicalName": entityName } : objEntity;
-                                //$scope.startingEntity = { "logicalName": entityName } ;
                                 var cached = $mainScope.getCachedMetadataFields(entityName);
                                 if (cached == null) {
                                     crmRepositoryService.retrieveMetadataFieldsEntity(entityName).then(function (fields) {
@@ -2824,7 +2712,6 @@ function startInitialing() {
                             }
 
                             $scope.recordChangedOnInitialize = function (id) {
-                                //console.log("recordChangedOnInitialize");
                                 //set visible the Id in the record select pick list
 
                                 $scope.editing = false;
@@ -2832,12 +2719,10 @@ function startInitialing() {
                                 $scope.id = null;
                                 $scope.loadingRecord = true;
                                 $scope.id = id;
-                                //console.log("curent entity: " + $scope.currentEntity);
                                 crmRepositoryService.retrieveRecord($scope.id, $scope.currentEntity).then(function (record) {
                                     $scope.currentRecord = record;
                                     $scope.startingId = { "id": id };
                                     $scope.addToHistory($scope.currentEntity, id);
-                                    //console.log(record);
                                     $scope.loadingRecord = false;
                                 }, function (e) { console.log(e); });
                             }
@@ -3283,8 +3168,6 @@ function startInitialing() {
                             '</md-dialog>'].join("")
                         ,
                         controller: function ($scope, $mdDialog) {
-
-                            //$scope.code = { val: $scope.getCode()};
 
                             $scope.showCodeBool = false;
                             $scope.executionSentence = true;
@@ -4006,7 +3889,6 @@ function startInitialing() {
                             function getSelect(__attributes) {//, __relations) {
                                 var select = null;
                                 if (__attributes.length > 0) {
-                                    //select = "$select ";
                                     select = "";
                                     for (var i = 0; i < __attributes.length; i++) {
                                         if (i == __attributes.length - 1) {
@@ -4015,18 +3897,6 @@ function startInitialing() {
                                             select += __attributes[i]["schemaName"] + ", ";
                                         }
                                     }
-                                    //if (__relations!= null) {
-                                    //    if (__relations.length > 0) {
-                                    //        select += ", ";
-                                    //        for (var i = 0; i < __relations.length; i++) {
-                                    //            if (i == __relations.length - 1) {
-                                    //                select += __relations[i].relation + "";
-                                    //            } else {
-                                    //                select += __relations[i].relation + ", ";
-                                    //            }
-                                    //        }
-                                    //    }
-                                    //}
 
                                 }
 
@@ -4663,13 +4533,6 @@ function startInitialing() {
             var configUpdate = getConfig("Update");
 
 
-            //this.requestFetch = function (xml) {
-            //    var fetchEncoded = xml.replace(/\</g, "&lt;").replace(/\>/g, "&gt;");
-            //    var data = DD.SOAP.SCHEMAS.RetrieveMultiple_Fetch(fetchEncoded);
-            //    var promise = $http.post(url, data, configRetrieveMultiple);
-            //    return promise;
-            //}
-
         }]);
 
     app.directive('hud', ['$window', function ($window) {
@@ -4677,17 +4540,12 @@ function startInitialing() {
             restrict: "E",
             replace: true,
             template: ['<div ng-style="styleControl">',
-                //'<tile color="tileStyle.blue" click="onClickMainTile()"></tile>',
                 '<button-bar-fav buttons="topMenu"></button-bar-fav>',
                 '</div>'].join(""),
             link: function ($scope, element, attrs) {
 
                 $scope.styleControl = {
                     'width': '100%',
-                    //'display': 'inline-block',
-                    //'left': '0px',
-                    //'top': '0px',
-                    //'position': 'absolute',
                     'z-index': '1000',
                 };
             },
@@ -4747,7 +4605,7 @@ function startInitialing() {
                 '<div ng-if="!notInForm"  layout="row">',
                 '<input type="text" key="Logical name" ng-value="entityInfo.name" style="width: 200px; font-size: 20px; color: white; background: transparent; border: 0px; text-align: center;"></input>',
                 '<input type="text" key="Id" ng-value="entityInfo.id" style="width: 420px; font-size: 20px; color: white; background: transparent; border: 0px; text-align: center;"></input>',
-                //'<span ng-if="!notInForm">{{entityInfo.name}},{{entityInfo.id}}</span>',
+                
                 '</div>',//INFO: WEB ETC
                 '</div>',
                 '</md-toolbar>',
@@ -4772,19 +4630,6 @@ function startInitialing() {
                     $scope.$root.$broadcast('generalVisibilityChanged', { visible: true });
                 }
 
-
-
-                //$scope.inline = {
-                //    'display': 'inline-block',
-                //}
-                //$scope.style = {
-                //    //'display': 'inline-block',
-                //    'width': '',
-                //    //'left': '0px',
-                //    //'top': '0px',
-                //    //'position': 'absolute',
-                //    'z-index': '2147483644',
-                //};
             },
             controller: function ($scope) {
 
@@ -4808,11 +4653,7 @@ function startInitialing() {
                     'display': 'inline-block',
                 }
                 $scope.style = {
-                    //'display': 'inline-block',
                     'width': '',
-                    //'left': '0px',
-                    //'top': '0px',
-                    //'position': 'absolute',
                     'z-index': '2147483644',
                 };
             },
@@ -4834,17 +4675,11 @@ function startInitialing() {
                 '<div class="btn btn-primary btn-sm" ng-click="click()" ng-disabled="disabled()">{{title}}</div>',
                 '</div>'].join(""),
             link: function ($scope, element, attrs) {
-                //TODO: doesn't work disabled
-                //console.log($scope.disabled());
                 $scope.inline = {
                     'display': 'inline-block',
                 }
                 $scope.style = {
-                    //'display': 'inline-block',
                     'border-radius': '50%',
-                    //'left': '0px',
-                    //'top': '0px',
-                    //'position': 'absolute',
                     'z-index': '2147483644',
                 };
             },
@@ -4865,15 +4700,10 @@ function startInitialing() {
                 '<span ng-class="color">*</span>',
                 '</div>'].join(""),
             link: function ($scope, element, attrs) {
-                //$scope.click = function () { console.log("CLICKO");}
-                //console.log($scope.click);
                 $scope.style = {
                     'display': 'inline-block',
                     'cursor': 'pointer',
                     'border-radius': '50%',
-                    //'left': '0px',
-                    //'top': '0px',
-                    //'position': 'absolute',
                     'z-index': '2147483644',
                 };
             },
@@ -4939,7 +4769,6 @@ function startInitialing() {
                 '</md-input-container>'].join(""),
             link: function ($scope, element, attrs) {
                 $scope.name = attrs.key;
-                //$scope.rows = attrs.rows != null ? attrs.rows : 5;
                 $scope.rows = function () { return 10; };
             }
         }
@@ -5039,18 +4868,6 @@ function startInitialing() {
                     if (newVal != oldVal) {
                         var decimal = parseFloat(newVal);
                         $scope.value = decimal;
-                        //if (isNaN(decimal)) {
-                        //    $scope.value = null;
-                        //    return;
-                        //}
-                        //var splitArray = (decimal + "").split(".");
-                        //var precision = 0;
-                        //if (splitArray.length==1) {
-                        //    precision = 1;
-                        //}else{
-                        //    precision=splitArray[1].length;
-                        //}
-                        //$scope.value = decimal.toFixed(Math.min($scope.precision, precision));
                     }
                 });
 
@@ -5137,7 +4954,6 @@ function startInitialing() {
                 }
                 $scope.id = id;
                 $scope.typename = typename;
-                //$scope.valueFormated = "Id: " + id + "\r\nEntity: " + typename;
             },
             controller: function ($scope) {
 
@@ -5224,11 +5040,8 @@ function startInitialing() {
             scope: {
                 items: '=',
                 selected: '=',
-                //getLabel: '&',
                 filterFn: '&',
                 changed: '&',
-
-                //value: '=',
             },
             template: ['<div>',
                 '<md-autocomplete ',
@@ -5253,11 +5066,6 @@ function startInitialing() {
                 '</div>'].join(""),
             link: function ($scope, element, attrs) {
 
-                //$scope.$watch('selected', function (newVal, oldVal) {
-                //    console.log("nuevo valor:");
-                //    console.log(newVal);
-                //    console.log(oldVal);
-                //});
                 $scope.getLabel = function (item) {
                     return item["schemaName"];
                 }
@@ -5273,7 +5081,6 @@ function startInitialing() {
                 }
                 $scope.name = attrs.key;
                 angular.element(element).bind('keydown', null, (e) => {
-                    //console.log(e.which);
                     if (e.which == 8) {
                         var oldValue = $scope.searchText;
                         var lenOldValue = oldValue.length;
@@ -5308,7 +5115,6 @@ function startInitialing() {
                 filterFn: '&',
                 changed: '&',
 
-                //value: '=',
             },
             template: ['<div>',
                 '<md-autocomplete ',
@@ -5329,11 +5135,6 @@ function startInitialing() {
                 '</div>'].join(""),
             link: function ($scope, element, attrs) {
 
-                //$scope.$watch('selected', function (newVal, oldVal) {
-                //    console.log("nuevo valor:");
-                //    console.log(newVal);
-                //    console.log(oldVal);
-                //});
 
                 $scope.filterEntities = function (query) {
                     var results = query ? $scope.items.filter(createFilterFor(query)) : $scope.items;
@@ -5347,7 +5148,6 @@ function startInitialing() {
                 }
                 $scope.name = attrs.key;
                 angular.element(element).bind('keydown', null, (e) => {
-                    //console.log(e.which);
                     if (e.which == 8) {
                         var oldValue = $scope.searchText;
                         var lenOldValue = oldValue.length;
@@ -5376,12 +5176,9 @@ function startInitialing() {
             restrict: "E",
             replace: true,
             scope: {
-                //items: '=',
                 selected: '=',
                 getLabel: '&',
-                //filterFn: '&',
                 changed: '&',
-                //value: '=',
                 queryPromise: '&',
             },
             template: ['<div>',
@@ -5402,12 +5199,6 @@ function startInitialing() {
                 '</md-autocomplete>',
                 '</div>'].join(""),
             link: function ($scope, element, attrs) {
-
-                //$scope.$watch('selected', function (newVal, oldVal) {
-                //    //console.log("nuevo valor id:");
-                //    //console.log(newVal);
-                //    //console.log(oldVal);
-                //});
 
                 $scope.filterEntities = function (query) {
                     return $scope.queryPromise({ query: query });
@@ -5840,8 +5631,6 @@ function startInitialing() {
         } catch (e) {
             console.error(e);
         }
-
-        //angular.bootstrap(document.getElementById('hud-crm-content-div'), ['hudApp']);
     }
     function appendMainAppDiv() {
 
@@ -5864,23 +5653,13 @@ var HUDCRM_TOOL = {
     },
     compare2Objects: function (x, y) {
         var p;
-
-        // remember that NaN === NaN returns false
-        // and isNaN(undefined) returns true
         if (isNaN(x) && isNaN(y) && typeof x === 'number' && typeof y === 'number') {
             return true;
         }
-
-        // Compare primitives and functions.     
-        // Check if both arguments link to the same object.
-        // Especially useful on the step where we compare prototypes
         if (x === y) {
             return true;
         }
 
-        // Works in case when functions are created in constructor.
-        // Comparing dates is a common scenario. Another built-ins?
-        // We can even handle functions passed across iframes
         if ((typeof x === 'function' && typeof y === 'function') ||
             (x instanceof Date && y instanceof Date) ||
             (x instanceof RegExp && y instanceof RegExp) ||
@@ -5889,7 +5668,6 @@ var HUDCRM_TOOL = {
             return x.toString() === y.toString();
         }
 
-        // At last checking prototypes as good as we can
         if (!(x instanceof Object && y instanceof Object)) {
             return false;
         }
@@ -5906,13 +5684,10 @@ var HUDCRM_TOOL = {
             return false;
         }
 
-        // Check for infinitive linking loops
         if (leftChain.indexOf(x) > -1 || rightChain.indexOf(y) > -1) {
             return false;
         }
 
-        // Quick checking of one object being a subset of another.
-        // todo: cache the structure of arguments[0] for performance
         for (p in y) {
             if (y.hasOwnProperty(p) !== x.hasOwnProperty(p)) {
                 return false;
@@ -5991,10 +5766,6 @@ var HUDCRM_INTER = {
             callback();
         })
     }
-
-    //HUDCRM_INTER.controller.$apply(function () {
-    //    HUDCRM_INTER.controller.asd();
-    //})
 }
 var HUDCRM_UI = {
     idDivHud: "hud-crm-div",
@@ -6021,9 +5792,7 @@ var HUDCRM_UI = {
         } catch (e) {
             console.error(e);
         }
-        //console.log(HUDCRM_UI.tree);
-        //console.log(HUDCRM_UI.controlsInTabs);
-        //console.log(HUDCRM_UI.webResources);
+        
     },
     setUi: function () {
         var tree = HUDCRM_UI.tree;
@@ -6031,7 +5800,6 @@ var HUDCRM_UI = {
             var tab = tree.tabs[i];
             HUDCRM_UI.setTabUi(tab);
         }
-        //header/footer controls
         for (var i = 0; i < tree.controls.length; i++) {
             var control = tree.controls[i];
             HUDCRM_UI.setControlUi(control, true);
@@ -6134,7 +5902,6 @@ var HUDCRM_UI = {
     },
     updateVisibilityTabUi: function (tab, visible) {
         //TODO
-        //console.log(tab);
         var type = HUDCRM_UI.typesUiTiles.tab;
         var id = HUDCRM_UI.getIdForUi(tab.name, type);
         var idTile = "tile_" + id;
@@ -6286,7 +6053,6 @@ var HUDCRM_UI = {
 
             } else if (control.type == HUDCRM_UI.controlType.subgrid) {
                 position = $('#' + control.name + '_d').position();
-                //position.top = $('#' + control.name + '_ccDiv').position().top;
             } else {
                 position = $('#' + control.name + '_c').position();
             }
@@ -6303,26 +6069,17 @@ var HUDCRM_UI = {
             var literalHeaderControl = "header";
             var positionOff = $('#' + control.name + '_c').offset();
             var position_c = $('#' + control.name + '_c').position();
-            //position = position_c;
             if (control.name.substr(0, literalHeaderProcessControl.length) == literalHeaderProcessControl) {
                 if (typeof (position_c) != 'undefined' && typeof (positionOff) != 'undefined') {
                     position = { left: position_c.left - HUDCRM_CORE.getCorrectionLeftControls(), top: positionOff.top }
-                    //position.left = position_c.left - HUDCRM_CORE.getCorrectionLeftControls();
-                    //position.top = positionOff.top;
                 }
             } else if (control.name.substr(0, literalHeaderControl.length) == literalHeaderControl) {
                 if (typeof (position_c) != 'undefined' && typeof (positionOff) != 'undefined') {
                     position = { left: positionOff.left - HUDCRM_CORE.getCorrectionLeftControls(), top: positionOff.top }
-                    //console.log(control, position);
-
-                    ////position.left = positionOff.left - HUDCRM_CORE.getCorrectionLeftControls();
-                    ////position.top = positionOff.top;
                 }
             } else {
                 if (typeof (position_c) != 'undefined') {
                     position = { left: position_c.left - HUDCRM_CORE.getCorrectionLeftControls(), top: position_c.top }
-                    //position.left = position_c.left - HUDCRM_CORE.getCorrectionLeftControls();
-                    //position.top = position_c.top;
                 }
             }
         }
@@ -6374,9 +6131,6 @@ var HUDCRM_UI = {
         $div.css('left', position.left + 'px');
         $div.css('top', position.top + 'px');
         $div.css('position', 'absolute');   //2015-2016
-        //$div.css('position', 'relative');  
-        //$div.css('z-index', '1000');
-        //$div.css('visibility', 'hidden');
         return $div;
     },
     setVisibilityControl: function (name, type, visible) {
@@ -6459,9 +6213,6 @@ var HUDCRM_CORE = {
     },
     getTargetDivForTiles: function (isheader) {
 
-        //if (HUDCRM_CORE.targetDivForTiles != null) {
-        //    return HUDCRM_CORE.targetDivForTiles;
-        //}
         var version = HUDCRM_CORE.getApplicationVersion();
         if (isheader) {
             HUDCRM_CORE.targetDivForTiles = "#formHeaderContainer";
@@ -6523,7 +6274,7 @@ var HUDCRM_CORE = {
             var formTypeStr = HUDCRM_CORE.getFormTypeString();
             prop["formType"] = formTypeStr + " [" + formType + "]";
         }
-        //TODO: async petitions to: PrimaryIdAttribute, PrimaryNameAttribute, ObjectTypeCode, IsCustomEntity, SchemaName
+        //TODO: async request to: PrimaryIdAttribute, PrimaryNameAttribute, ObjectTypeCode, IsCustomEntity, SchemaName
         return prop;
     }
 }

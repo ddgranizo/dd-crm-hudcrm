@@ -10,7 +10,6 @@ chrome.extension.onMessage.addListener(function (msg, sender, sendResponse) {
 
 
 var SecondLevelFiles = [
-    //{ name: "REFEREDVAR_Angular", filename: "thirds/angular.js", type: "js", apply: "form" },
     { name: "REFEREDVAR_JQuery", filename: "thirds/jquery-2.1.3.js", type: "js", apply: "form" },
 
     { name: "REFEREDVAR_HUDCRMCommonFunctions", filename: "HUDCRMCommonFunctions.js", type: "js", apply: "form" },
@@ -23,8 +22,6 @@ var SecondLevelFiles = [
     { name: "REFEREDVAR_LibBeautifyUnpacker", filename: "thirds/libBeautifyUnpacker.js", type: "js", apply: "form" },
     { name: "REFEREDVAR_LibCodeMirror", filename: "thirds/libsCodeMirror.js", type: "js", apply: "form" },
     { name: "REFEREDVAR_CodemirrorCSS", filename: "thirds/codemirror.css", type: "css", apply: "form" },
-
-    //{ name: "REFEREDVAR_Angular", filename: "thirds/angular.js", type: "js", apply: "form" },
 
     { name: "REFEREDVAR_Angular", filename: "thirds/angular.min.js", type: "js", apply: "form" },
     { name: "REFEREDVAR_AngularAnimate", filename: "thirds/angular_animate.min.js", type: "js", apply: "form" },

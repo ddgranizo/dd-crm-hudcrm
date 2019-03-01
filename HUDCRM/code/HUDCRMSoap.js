@@ -56,11 +56,7 @@ HUDCRM_SOAP = {
         var objEntities__ = Array();
         var attributes__ = Array();
         var attributesArra__ = $($(entities__[0]).find("a\\:Attributes")[0]).find('a\\:KeyValuePairOfstringanyType');
-        //for (var i = 0; i < attributesArra__.length; i++) {
-        //    var attr__ = attributesArra__[i];
-        //    var key__ = $($(attr__).find('key')[0]).html();
-        //    attributes__.push(key__);
-        //}
+        
         for (var i = 0; i < entities__.length; i++) {
             objEntities__.push(true);
         }
@@ -79,11 +75,7 @@ HUDCRM_SOAP = {
         var o__ = new Object();
         var responseR__ = $(__response).find('RetrieveResult')[0];
         
-        //if (__includeFormatted) {
-        //    console.log($(__response).find('RetrieveResult')[0]);
-        //}
-        //console.log($(responseR__)[0]);
-        var id__ = null; // $($(responseR__).find('a\\:id')[0]).html();
+        var id__ = null; 
         var children__ = $($(responseR__)[0]).children();
         for (var i = 0; i < children__.length; i++) {
             var tagName__ = children__[i].tagName;
@@ -219,7 +211,7 @@ HUDCRM_SOAP = {
         var values__ = new Object();
         var formatted__ = new Object();
         var types__ = new Object();
-        var id__ = null; //$($(__entity).find("a\\:id")[0]).html();
+        var id__ = null; 
 
         var children__ = $($(__entity)[0]).children();
         for (var i = 0; i < children__.length; i++) {
@@ -229,7 +221,6 @@ HUDCRM_SOAP = {
                 break;
             }
         }
-        //console.log(children__);
         var attributes__ = $($(__entity).find("a\\:Attributes")[0]).find('a\\:KeyValuePairOfstringanyType');
         for (var i = 0; i < attributes__.length; i++) {
 
@@ -263,19 +254,17 @@ HUDCRM_SOAP = {
                 formatted__[key__] = value__;
             }
         }
-        //HUDCRM_SOAP.global = __entity;
+        
 
         if (__includeFormatted) {
             
             var formatedAttributes = $($(__entity).find("a\\:FormattedValues")[0]).find('a\\:KeyValuePairOfstringstring');
-            //console.log($(formatedAttributes)[0]);
+            
             for (var i = 0; i < formatedAttributes.length; i++) {
                 var attr__ = formatedAttributes[i];
                 var key__ = $($(attr__).find('b\\:key')[0]).html();
                 var value__ = $($(attr__).find('b\\:value')[0]).html();
-                //console.log(key__ + "->" + value__);
                 formatted__[key__] = value__;
-
             }
         }
         o__.values = values__;
@@ -307,7 +296,6 @@ HUDCRM_SOAP = {
         o__.LogicalName = LogicalName__;
         o__.Id = Id__;
         return o__;
-        //console.log(Id + " - " + LogicalName + " - " + Name);
     },
     deserializeOptionSetValue: function (__value) {
         var o__ = Object();
@@ -358,8 +346,6 @@ HUDCRM_SOAP = {
         var AttributeLogicalName__;
         var EntityLogicalName__;
         var Value__;
-        //var ManagedPropertyLogicalName__;
-        //var Value__;
         var array__ = $(__value);
         for (var i = 0; i < array__.length; i++) {
             var element__ = array__[i];
@@ -394,7 +380,6 @@ HUDCRM_SOAP = {
     },
     deserializeRetrieveFieldsMetadata: function (__response) {
         var o__ = new Object();
-        //console.log($(__response)[0]);
         var attributes__ = Array();
         var attributesArr__ = $($($(__response).find('ExecuteResult')[0]).find('c\\:Attributes')[0]).find('c\\:AttributeMetadata');
         var rel1ton__ = $($($(__response).find('ExecuteResult')[0]).find('c\\:OneToManyRelationships')[0]).find('c\\:OneToManyRelationshipMetadata');
@@ -419,15 +404,11 @@ HUDCRM_SOAP = {
                 var arrOptions = Array();
                 var options = $(attributesArr__[i]).find('c\\:optionset').find('c\\:options').find('c\\:optionmetadata');
                 for (var j = 0; j < options.length; j++) {
-                    //console.log($(options[j])[0]);
                     var label = $(options[j]).find('c\\:label').find('a\\:userlocalizedlabel').find('a\\:label').html();
                     var value = $(options[j]).find('c\\:value').html();
                     arrOptions.push({value: value, display: label});
                 }
-                ////console.log(options);
-                //HUDCRM_SOAP.global = options;
                 attribute.options = arrOptions;
-                //console.log(arrOptions);
             }
             if (attribute.type=="Boolean" ) {
                 var arrOptions = Array();
@@ -437,8 +418,6 @@ HUDCRM_SOAP = {
                 arrOptions.push({value: true, display: displayTrue});
                 arrOptions.push({value: false, display: displayFalse});
                 attribute.options = arrOptions;
-                //var options = $(attributesArr__[i]).find('c\\:optionset').find('c\\:options').find('c\\:optionmetadata');
-                //console.log($(attributesArr__[i])[0]);
             }
             if (attribute.type=="Decimal" ) {
                 var precision = $(attributesArr__[i]).find('c\\:precision').html();
@@ -451,7 +430,6 @@ HUDCRM_SOAP = {
                 }else{
                     attribute.dateonly = false;
                 }
-                //console.log($(attributesArr__[i])[0]);
             }
             if (attribute.type == "Lookup") {
                 var related = $(attributesArr__[i]).find('c\\:targets').find('d\\:string');
@@ -460,7 +438,6 @@ HUDCRM_SOAP = {
                     attribute.relatedEntity = $(related[0]).html();
                     attribute.moreThanOneRelated = false;
                 } 
-                //console.log($(attributesArr__[i])[0]);
             }
             attributes__.push(attribute);
         }
@@ -539,18 +516,16 @@ HUDCRM_SOAP.SCHEMAS = {
             console.log(attributes__[i]);
 
             if (attributes__[i].type == "Uniqueidentifier") {
-                //req1__ = req1__ + HUDCRM_SOAP.SCHEMAS.getSchemaKeyValuePairOfStringAnyGuid(attributes__[i].logicalName, attributes__[i].val);
             } else if (attributes__[i].type == "DateTime") {
                 req1__ = req1__ + HUDCRM_SOAP.SCHEMAS.getSchemaKeyValuePairOfStringAnyDateTime(attributes__[i].logicalName, attributes__[i].val);
             } else if (attributes__[i].type == "Lookup") {
-               // console.log(attributes__[i]);
                 req1__ = req1__ + HUDCRM_SOAP.SCHEMAS.getSchemaKeyValuePairOfStringAnyEntityReference(attributes__[i].logicalName, attributes__[i].entityRelated, attributes__[i].val);
             } else if (attributes__[i].type == "Owner") {
                 req1__ = req1__ + HUDCRM_SOAP.SCHEMAS.getSchemaKeyValuePairOfStringAnyEntityReference(attributes__[i].logicalName, attributes__[i].entityRelated, attributes__[i].val);
             } else if (attributes__[i].type == "State") {
-                //req1__ = req1__ + HUDCRM_ASYNC.getSchemaKeyValuePairOfStringAnyDateTime(attributes__[i].logicalName, attributes__[i].val);
+                //todo update state
             } else if (attributes__[i].type == "Status") {
-                //req1__ = req1__ + HUDCRM_ASYNC.getSchemaKeyValuePairOfStringAnyDateTime(attributes__[i].logicalName, attributes__[i].val);
+                //todo update status
             } else if (attributes__[i].type == "Integer") {
                 req1__ = req1__ + HUDCRM_SOAP.SCHEMAS.getSchemaKeyValuePairOfStringAnyInteger(attributes__[i].logicalName, attributes__[i].val);
             } else if (attributes__[i].type == "Memo") {
@@ -693,10 +668,6 @@ HUDCRM_SOAP.SCHEMAS = {
     },
     RetrieveMultiple_USDItemsOfConfiguration: function (entity, fieldName, fieldId, configurationId, intersectionEntity) {
 
-        //console.log(entity);
-        //console.log(fieldName);
-        //console.log(fieldId);
-        //console.log(configurationId);
 
         var request = ["<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">",
             "<s:Body>",
@@ -765,78 +736,6 @@ HUDCRM_SOAP.SCHEMAS = {
             "</s:Body>",
             "</s:Envelope>"].join("");
 
-        //var request = ["<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">",
-        //    "<s:Body>",
-        //    "<RetrieveMultiple xmlns=\"http://schemas.microsoft.com/xrm/2011/Contracts/Services\" xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\">",
-        //    "<query i:type=\"a:QueryExpression\" xmlns:a=\"http://schemas.microsoft.com/xrm/2011/Contracts\">",
-        //    //"<a:ColumnSet>",
-        //    //"<a:AllColumns>false</a:AllColumns>",
-        //    //"<a:Columns xmlns:b=\"http://schemas.microsoft.com/2003/10/Serialization/Arrays\">",
-        //    //"<b:string>" + fieldName + "</b:string>",
-        //    //"</a:Columns>",
-        //    //"</a:ColumnSet>",
-        //    "<a:ColumnSet>",
-        //    "<a:AllColumns>true</a:AllColumns>",
-        //    "<a:Columns xmlns:b=\"http://schemas.microsoft.com/2003/10/Serialization/Arrays\" />",
-        //    "</a:ColumnSet>",
-        //    "<a:Criteria>",
-        //    "<a:Conditions>",
-        //    "<a:ConditionExpression>",
-        //    "<a:AttributeName>statecode</a:AttributeName>",
-        //    "<a:Operator>Equal</a:Operator>",
-        //    "<a:Values xmlns:b=\"http://schemas.microsoft.com/2003/10/Serialization/Arrays\">",
-        //    "<b:anyType i:type=\"c:int\" xmlns:c=\"http://www.w3.org/2001/XMLSchema\">0</b:anyType>",
-        //    "</a:Values>",
-        //    "<a:EntityName i:nil=\"true\" />",
-        //    "</a:ConditionExpression>",
-        //    "</a:Conditions>",
-        //    "<a:FilterOperator>And</a:FilterOperator>",
-        //    "<a:Filters />",
-        //    "</a:Criteria>",
-        //    "<a:Distinct>false</a:Distinct>",
-        //    "<a:EntityName>" + entity + "</a:EntityName>",
-        //    "<a:LinkEntities>",
-        //    "<a:LinkEntity>",
-        //    "<a:Columns>",
-        //    "<a:AllColumns>false</a:AllColumns>",
-        //    "<a:Columns xmlns:b=\"http://schemas.microsoft.com/2003/10/Serialization/Arrays\" />",
-        //    "</a:Columns>",
-        //    "<a:EntityAlias i:nil=\"true\" />",
-        //    "<a:JoinOperator>Inner</a:JoinOperator>",
-        //    "<a:LinkCriteria>",
-        //    "<a:Conditions>",
-        //    "<a:ConditionExpression>",
-        //    "<a:AttributeName>msdyusd_configurationid</a:AttributeName>",
-        //    "<a:Operator>Equal</a:Operator>",
-        //    "<a:Values xmlns:b=\"http://schemas.microsoft.com/2003/10/Serialization/Arrays\">",
-        //    "<b:anyType i:type=\"c:guid\" xmlns:c=\"http://schemas.microsoft.com/2003/10/Serialization/\">" + configurationId + "</b:anyType>",
-        //    "</a:Values>",
-        //    "<a:EntityName i:nil=\"true\" />",
-        //    "</a:ConditionExpression>",
-        //    "</a:Conditions>",
-        //    "<a:FilterOperator>And</a:FilterOperator>",
-        //    "<a:Filters />",
-        //    "</a:LinkCriteria>",
-        //    "<a:LinkEntities />",
-        //    "<a:LinkFromAttributeName>" + fieldId + "</a:LinkFromAttributeName>",
-        //    "<a:LinkFromEntityName>" + entity + "</a:LinkFromEntityName>",
-        //    "<a:LinkToAttributeName>" + fieldId + "</a:LinkToAttributeName>",
-        //    "<a:LinkToEntityName>msdyusd_configuration_hostedcontrol</a:LinkToEntityName>",
-        //    "<a:Orders />",
-        //    "</a:LinkEntity>",
-        //    "</a:LinkEntities>",
-        //    "<a:Orders />",
-        //    "<a:PageInfo>",
-        //    "<a:Count>0</a:Count>",
-        //    "<a:PageNumber>0</a:PageNumber>",
-        //    "<a:PagingCookie i:nil=\"true\" />",
-        //    "<a:ReturnTotalRecordCount>false</a:ReturnTotalRecordCount>",
-        //    "</a:PageInfo>",
-        //    "<a:NoLock>false</a:NoLock>",
-        //    "</query>",
-        //    "</RetrieveMultiple>",
-        //    "</s:Body>",
-        //    "</s:Envelope>"].join("");
         return request;
     },
     RetrieveMultiple_USDConfigurations: function (entity, field) {
@@ -1078,7 +977,6 @@ HUDCRM_SOAP.SCHEMAS = {
             "</RetrieveMultiple>",
             "</s:Body>",
             "</s:Envelope>"].join("");
-        //console.log((request));
         return request;
     },
 

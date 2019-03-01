@@ -168,7 +168,6 @@ var HUDCRM_XRM = {
         }
         b.visibleHud = b.visible;
         b.errorShowed = false;
-        //b.preventOnEventVisible = false;
 
         var sections = [];
         var sectionsArr = __tab.sections.get();
@@ -205,7 +204,6 @@ var HUDCRM_XRM = {
             b.label = HUDCRM_XRM.stringNoLabel;
         }
         b.errorShowed = false;
-        //b.preventOnEventVisible = false;
         if (__visibleHudTab == true) {
             b.visibleHud = b.visible;
         } else {
@@ -261,7 +259,6 @@ var HUDCRM_XRM = {
                     b.maxlength = HUDCRM_UI.attributes[j].maxlength;
                 }
                 if (b.type == "lookup") {
-                    //console.log(HUDCRM_UI.attributes[j].value);
                     b.value = HUDCRM_UI.attributes[j].value;
                 }
                 b.required = HUDCRM_UI.attributes[j].required;
@@ -273,10 +270,8 @@ var HUDCRM_XRM = {
         if (!found) {
             b.type = __control.getControlType();
         }
-
         
 
-        //b.preventOnEventVisible = false;
         if (__visibleHudSection == true) {
             b.visibleHud = b.visible;
         } else {
@@ -285,13 +280,11 @@ var HUDCRM_XRM = {
 
         if (b.type != "subgrid" && b.type != 'kbsearch' && b.type != "webresource" && b.type != "iframe") {
             b.disabled = __control.getDisabled();
-            //console.log(b.required);
         } else {
             b.disabled = false;
             
         }
         if (b.type == "subgrid") {
-            //b.entityName = __control.getEntityName();
         }
 
         if (b.type == "webresource") {
@@ -307,7 +300,6 @@ var HUDCRM_XRM = {
             b.src = decodeURIComponent(__control.getSrc());
         }
         HUDCRM_XRM.controlsInTabs.push(b);
-        //b.attribute = control.getAttribute();
         return b;
     },
 
