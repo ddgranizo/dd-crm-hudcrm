@@ -1,0 +1,123 @@
+﻿.label-as-badge{
+    border-radius: 50%;
+}
+
+.CodeMirror {
+            border: 1px solid #ccc;
+            height: 450px;
+            font-size: 100%;
+            font-family: monospace;
+            margin-bottom: 6px;
+            background: white;
+        }
+
+.CodeMirror-code{
+
+     font-size: 100%;
+            font-family: monospace;
+}
+
+
+.edit-value-edit-record{
+    cursor: pointer;
+    width: 100%;
+    min-height: 14px;
+}
+.edit-value-edit-record:hover{
+    background-color: #c0e4ff;
+}
+
+md-input-container {
+    margin: 0px;
+    
+}
+md-input-container.md-block {
+    margin-bottom: 0px;
+}
+md-switch {
+    margin: 0px;
+}
+
+input {
+    font-size: 16px
+}
+
+.CodeMirror {
+    border: 1px solid #eee;
+    height: auto;
+}
+
+.color-green {
+    background-color: #43A047;
+    color: white;
+}
+/*.zindex-modal {
+    z-index: 99000 !important;
+}
+.md-dialog-container {
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    align-items: center;
+
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: $z-index-dialog;
+}
+.md-dialog {
+   
+}*/
+
+.icon-clickable-white {
+    color: rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+}
+.icon-clickable-white:hover {
+    color: rgba(255, 255, 255, 1);
+}
+
+
+.icon-clickable {
+    color: rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+.icon-clickable:hover {
+    color: rgba(0, 0, 0, 0.8);
+}
+.icon-clickable-red {
+    color: rgba(255, 0, 0, 0.4);
+    cursor: pointer;
+}
+.icon-clickable-red:hover {
+    color: rgba(255, 0, 0, 0.8);
+}
+
+
+.selectdemoSelectHeader {
+    /* Please note: All these selectors are only applied to children of elements with the 'selectdemoSelectHeader' class */
+}
+
+    .selectdemoSelectHeader .demo-header-searchbox {
+        border: none;
+        outline: none;
+        height: 100%;
+        width: 100%;
+        padding: 0;
+    }
+
+    .selectdemoSelectHeader .demo-select-header {
+        box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1), 0 0 0 0 rgba(0, 0, 0, 0.14), 0 0 0 0 rgba(0, 0, 0, 0.12);
+        padding-left: 10.667px;
+        height: 48px;
+        cursor: pointer;
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: auto;
+    }
+
+    .selectdemoSelectHeader md-content._md {
+        max-height: 240px;
+    }
