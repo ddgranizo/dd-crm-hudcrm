@@ -3,6 +3,7 @@ app.controller("popup", ['$scope', function ($scope) {
 
     $scope.log = Array();
 
+    $scope.log.push({ version: "0.1.3.3", log: ["Updated thirds libraries for new Chrome Store policy"] });
     $scope.log.push({ version: "0.1.3.2", log: ["Available entity logical name and guid in the button bar"] });
     $scope.log.push({ version: "0.1.3.1", log: ["USD Quick Access for manage Unified Service Desk configurations", "Available HUD now in form, grid and ribbon pages", "Filter solution list by name"] });
     $scope.log.push({ version: "0.1.2.1", log: ["Fixed bug with Webresources"] });
