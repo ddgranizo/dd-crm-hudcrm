@@ -391,9 +391,8 @@ HUDCRM_SOAP = {
         o__.ObjectTypeCode = $($($(__response).find('ExecuteResult')[0]).find('c\\:ObjectTypeCode')[0]).html();
         o__.IsCustomEntity = $($($(__response).find('ExecuteResult')[0]).find('c\\:IsCustomEntity')[0]).html();
         o__.SchemaName = $($($(__response).find('ExecuteResult')[0]).find('c\\:SchemaName')[0]).html();
-
         for (var i = 0; i < attributesArr__.length; i++) {
-
+            
             var attribute = new Object();
             attribute.displayName = $($($($(attributesArr__[i]).find('c\\:DisplayName')[0]).find('a\\:LocalizedLabel')[0]).find('a\\:Label')[0]).html();
             attribute.logicalName = $($(attributesArr__[i]).find('c\\:LogicalName')[0]).html();
@@ -401,6 +400,16 @@ HUDCRM_SOAP = {
             attribute.schemaName = $($(attributesArr__[i]).find('c\\:SchemaName')[0]).html();
             attribute.isSearchable = $($(attributesArr__[i]).find('c\\:issearchable')[0]).html();
             if (attribute.type=="Picklist" ) {
+                var arrOptions = Array();
+                var options = $(attributesArr__[i]).find('c\\:optionset').find('c\\:options').find('c\\:optionmetadata');
+                for (var j = 0; j < options.length; j++) {
+                    var label = $(options[j]).find('c\\:label').find('a\\:userlocalizedlabel').find('a\\:label').html();
+                    var value = $(options[j]).find('c\\:value').html();
+                    arrOptions.push({value: value, display: label});
+                }
+                attribute.options = arrOptions;
+            }
+            if (attribute.type=="State" || attribute.type=="Status" ) {
                 var arrOptions = Array();
                 var options = $(attributesArr__[i]).find('c\\:optionset').find('c\\:options').find('c\\:optionmetadata');
                 for (var j = 0; j < options.length; j++) {
@@ -500,10 +509,72 @@ HUDCRM_SOAP = {
 
         return o__;
     },
+
+    deserializeCreateResponse: function (__value) {
+        var id__ = $($(__value).find("CreateResult")[0]).html();
+        return id__;
+    },
 };
 
 HUDCRM_SOAP.SCHEMAS = {
 
+    Create_Record: function(__entity, __attributes) {
+        var attributes__ = __attributes;
+        var req1__ = ["<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">",
+            "<s:Body>",
+            "<Create xmlns=\"http://schemas.microsoft.com/xrm/2011/Contracts/Services\" xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\">",
+            "<entity xmlns:a=\"http://schemas.microsoft.com/xrm/2011/Contracts\">",
+            "<a:Attributes xmlns:b=\"http://schemas.datacontract.org/2004/07/System.Collections.Generic\">"].join("");
+
+        for (var i = 0; i < attributes__.length; i++) {
+            if (attributes__[i].type == "Uniqueidentifier") {
+                //todo:
+            } else if (attributes__[i].type == "DateTime") {
+                req1__ = req1__ + HUDCRM_SOAP.SCHEMAS.getSchemaKeyValuePairOfStringAnyDateTime(attributes__[i].logicalName, attributes__[i].val);
+            } else if (attributes__[i].type == "Lookup") {
+                req1__ = req1__ + HUDCRM_SOAP.SCHEMAS.getSchemaKeyValuePairOfStringAnyEntityReference(attributes__[i].logicalName, attributes__[i].entityRelated, attributes__[i].val);
+            } else if (attributes__[i].type == "Owner") {
+                req1__ = req1__ + HUDCRM_SOAP.SCHEMAS.getSchemaKeyValuePairOfStringAnyEntityReference(attributes__[i].logicalName, attributes__[i].entityRelated, attributes__[i].val);
+            } else if (attributes__[i].type == "State") {
+                req1__ = req1__ + HUDCRM_SOAP.SCHEMAS.getSchemaKeyValuePairOfStringAnyStateCodeValue(attributes__[i].logicalName, attributes__[i].val);
+            } else if (attributes__[i].type == "Status") {
+                req1__ = req1__ + HUDCRM_SOAP.SCHEMAS.getSchemaKeyValuePairOfStringAnyStatusCodeValue(attributes__[i].logicalName, attributes__[i].val);
+            } else if (attributes__[i].type == "Integer") {
+                req1__ = req1__ + HUDCRM_SOAP.SCHEMAS.getSchemaKeyValuePairOfStringAnyInteger(attributes__[i].logicalName, attributes__[i].val);
+            } else if (attributes__[i].type == "Memo") {
+                req1__ = req1__ + HUDCRM_SOAP.SCHEMAS.getSchemaKeyValuePairOfStringAnyString(attributes__[i].logicalName, attributes__[i].val);
+            } else if (attributes__[i].type == "String") {
+                req1__ = req1__ + HUDCRM_SOAP.SCHEMAS.getSchemaKeyValuePairOfStringAnyString(attributes__[i].logicalName, attributes__[i].val);
+            } else if (attributes__[i].type == "Picklist") {
+                req1__ = req1__ + HUDCRM_SOAP.SCHEMAS.getSchemaKeyValuePairOfStringAnyOptionSetValue(attributes__[i].logicalName, attributes__[i].val);
+            } else if (attributes__[i].type == "Decimal") {
+                req1__ = req1__ + HUDCRM_SOAP.SCHEMAS.getSchemaKeyValuePairOfStringAnyDecimal(attributes__[i].logicalName, attributes__[i].val);
+            } else if (attributes__[i].type == "Boolean") {
+                req1__ = req1__ + HUDCRM_SOAP.SCHEMAS.getSchemaKeyValuePairOfStringAnyBoolean(attributes__[i].logicalName, attributes__[i].val);
+            } else if (attributes__[i].type == "Double") {
+                req1__ = req1__ + HUDCRM_SOAP.SCHEMAS.getSchemaKeyValuePairOfStringAnyDouble(attributes__[i].logicalName, attributes__[i].val);
+            } else if (attributes__[i].type == "Money") {
+                req1__ = req1__ + HUDCRM_SOAP.SCHEMAS.getSchemaKeyValuePairOfStringAnyMoney(attributes__[i].logicalName, attributes__[i].val);
+            }
+        }
+
+        var req2__ = ["</a:Attributes>",
+            "<a:EntityState i:nil=\"true\" />",
+            "<a:FormattedValues xmlns:b=\"http://schemas.datacontract.org/2004/07/System.Collections.Generic\" />",
+            "<a:KeyAttributes xmlns:b=\"http://schemas.microsoft.com/xrm/7.1/Contracts\" xmlns:c=\"http://schemas.datacontract.org/2004/07/System.Collections.Generic\" />",
+            "<a:LogicalName>" + __entity + "</a:LogicalName>",
+            "<a:RelatedEntities xmlns:b=\"http://schemas.datacontract.org/2004/07/System.Collections.Generic\" />",
+            "<a:RowVersion i:nil=\"true\" />",
+            "</entity>",
+            "</Create>",
+            "</s:Body>",
+            "</s:Envelope>"].join("");
+
+        var req__ = req1__ + req2__;
+        console.log($(req__)[0]);
+        return req__;
+
+    },
     Update_Record: function(__entity, __id, __attributes) {
         var attributes__ = __attributes;
         var req1__ = ["<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">",
@@ -523,9 +594,9 @@ HUDCRM_SOAP.SCHEMAS = {
             } else if (attributes__[i].type == "Owner") {
                 req1__ = req1__ + HUDCRM_SOAP.SCHEMAS.getSchemaKeyValuePairOfStringAnyEntityReference(attributes__[i].logicalName, attributes__[i].entityRelated, attributes__[i].val);
             } else if (attributes__[i].type == "State") {
-                //todo update state
+                req1__ = req1__ + HUDCRM_SOAP.SCHEMAS.getSchemaKeyValuePairOfStringAnyStateCodeValue(attributes__[i].logicalName, attributes__[i].val);
             } else if (attributes__[i].type == "Status") {
-                //todo update status
+                req1__ = req1__ + HUDCRM_SOAP.SCHEMAS.getSchemaKeyValuePairOfStringAnyStatusCodeValue(attributes__[i].logicalName, attributes__[i].val);
             } else if (attributes__[i].type == "Integer") {
                 req1__ = req1__ + HUDCRM_SOAP.SCHEMAS.getSchemaKeyValuePairOfStringAnyInteger(attributes__[i].logicalName, attributes__[i].val);
             } else if (attributes__[i].type == "Memo") {
@@ -635,6 +706,36 @@ HUDCRM_SOAP.SCHEMAS = {
             "<a:RowVersion i:nil=\"true\" />",
             "</b:value>",
             "</a:KeyValuePairOfstringanyType>"].join("");
+
+    },
+    getSchemaKeyValuePairOfStringAnyStatusCodeValue: function (__key, __value) {
+        if (__value == null || __value == "") {
+            return ["<a:KeyValuePairOfstringanyType>",
+                "<b:key>" + __key + "</b:key>",
+                "<b:value i:nil=\"true\" />",
+                "</a:KeyValuePairOfstringanyType>",].join("");
+        }
+        return ["<a:KeyValuePairOfstringanyType>",
+            "<b:key>" + __key + "</b:key>",
+            "<b:value i:type=\"a:OptionSetValue\">",
+            "<a:Value>" + __value + "</a:Value>",
+            "</b:value>",
+            "</a:KeyValuePairOfstringanyType>",].join("");
+
+    },
+    getSchemaKeyValuePairOfStringAnyStateCodeValue: function (__key, __value) {
+        if (__value == null || __value == "") {
+            return ["<a:KeyValuePairOfstringanyType>",
+                "<b:key>" + __key + "</b:key>",
+                "<b:value i:nil=\"true\" />",
+                "</a:KeyValuePairOfstringanyType>",].join("");
+        }
+        return ["<a:KeyValuePairOfstringanyType>",
+            "<b:key>" + __key + "</b:key>",
+            "<b:value i:type=\"a:OptionSetValue\">",
+            "<a:Value>" + __value + "</a:Value>",
+            "</b:value>",
+            "</a:KeyValuePairOfstringanyType>",].join("");
 
     },
     getSchemaKeyValuePairOfStringAnyOptionSetValue: function (__key, __value) {

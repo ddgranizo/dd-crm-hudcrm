@@ -2,7 +2,7 @@
 
 var HUDCRM_COMMONFUNCTIONS = {
 
-    xml2json : function (xml, tab) {
+    xml2json: function (xml, tab) {
         var X = {
             toObj: function (xml) {
                 var o = {};
@@ -194,25 +194,11 @@ var HUDCRM_COMMONFUNCTIONS = {
         return str;
     },
     completeWebResources: function (__ver) {
-        var webResources = Array();
-        var wr = $.find('script');
-        for (var i = 0; i < wr.length; i++) {
-            if (typeof ($(wr[i]).attr('src')) != 'undefined') {
-                if ($(wr[i]).attr('src').indexOf("/WebResources/") > -1) {
-                    var name = HUDCRM_XRM.getNameWR($(wr[i]).attr('src'));
-                    var o = new Object();
-                    o.nameWR = name;
-                    o.inUi = false;
-                    webResources.push(o);
-                }
-            }
-        }
-        var childIframes = $("iframe");
-        for (var i = 0; i < childIframes.length; i++) {
-            var iframe = childIframes[i];
-            var wr = $(iframe.contentDocument).find("script");
+        try {
+            var webResources = Array();
+            var wr = $.find('script');
             for (var i = 0; i < wr.length; i++) {
-                if (typeof ($(wr[i]).attr('src')) != 'undefined') {
+                if (typeof wr[i] != 'undefined' && wr[i] != null && typeof ($(wr[i]).attr('src')) != 'undefined' && $(wr[i]).attr('src') != null) {
                     if ($(wr[i]).attr('src').indexOf("/WebResources/") > -1) {
                         var name = HUDCRM_XRM.getNameWR($(wr[i]).attr('src'));
                         var o = new Object();
@@ -222,31 +208,56 @@ var HUDCRM_COMMONFUNCTIONS = {
                     }
                 }
             }
+            var childIframes = $("iframe");
+            for (var i = 0; i < childIframes.length; i++) {
+                var iframe = childIframes[i];
+                var wr = $(iframe.contentDocument).find("script");
+                for (var j = 0; j < wr.length; j++) {
+                    if (typeof wr[j] != 'undefined' && wr[j] != null && typeof ($(wr[j]).attr('src')) != 'undefined' && $(wr[j]).attr('src') != null) {
+                        if ($(wr[j]).attr('src').indexOf("/WebResources/") > -1) {
+                            var name = HUDCRM_XRM.getNameWR($(wr[j]).attr('src'));
+                            var o = new Object();
+                            o.nameWR = name;
+                            o.inUi = false;
+                            webResources.push(o);
+                        }
+                    }
+                }
+            }
+
+        } catch (error) {
+            console.error(error);
         }
+
         return webResources;
     },
 
     getCRMHeaderInfo: function (__ver) {
         var b = new Object();
 
-        b.APPLICATION_FULL_VERSION = APPLICATION_FULL_VERSION;
-        b.APPLICATION_VERSION = APPLICATION_VERSION;
-        b.CURRENT_WEB_THEME = CURRENT_WEB_THEME;
-        b.DEF_SOL_ID = DEF_SOL_ID;
-        b.ORG_ID = ORG_ID;
-        b.ORG_UNIQUE_NAME = ORG_UNIQUE_NAME;
-        b.USER_DATE_FORMATSTRING = USER_DATE_FORMATSTRING;
-        b.USER_GUID = USER_GUID;
-        b.USER_TIME_FORMAT = USER_TIME_FORMAT;
-        b.SERVER_URL = SERVER_URL;
-        b.IS_ONPREMISE = IS_ONPREMISE;
+        try {
+            b.APPLICATION_FULL_VERSION = APPLICATION_FULL_VERSION;
+            b.APPLICATION_VERSION = APPLICATION_VERSION;
+            b.CURRENT_WEB_THEME = CURRENT_WEB_THEME;
+            b.DEF_SOL_ID = DEF_SOL_ID;
+            b.ORG_ID = ORG_ID;
+            b.ORG_UNIQUE_NAME = ORG_UNIQUE_NAME;
+            b.USER_DATE_FORMATSTRING = USER_DATE_FORMATSTRING;
+            b.USER_GUID = USER_GUID;
+            b.USER_TIME_FORMAT = USER_TIME_FORMAT;
+            b.SERVER_URL = SERVER_URL;
+            b.IS_ONPREMISE = IS_ONPREMISE;
 
-        if (__ver == 5) {
+            if (__ver == 5) {
 
-        } else {
-            b.AUTO_SAVE_ENABLED = AUTO_SAVE_ENABLED;
-            b.USER_LANGUAGE_TWO_LETTER_NAME = USER_LANGUAGE_TWO_LETTER_NAME;
+            } else {
+                b.AUTO_SAVE_ENABLED = AUTO_SAVE_ENABLED;
+                b.USER_LANGUAGE_TWO_LETTER_NAME = USER_LANGUAGE_TWO_LETTER_NAME;
+            }
+        } catch (error) {
+            console.error(error);
         }
+
 
         return b;
     },

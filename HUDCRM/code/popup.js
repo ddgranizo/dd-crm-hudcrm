@@ -3,6 +3,7 @@ app.controller("popup", ['$scope', function ($scope) {
 
     $scope.log = Array();
 
+    $scope.log.push({ version: "0.1.3.4", log: ["Now available for new CRM UCI",  "Create record new fetaure", "Fixed bug loading webresources", "Shortcut for navigate to record when Editing record or Creating record", "Display options value in display name when either editing or creating record", "Status and State codes now can be edited from Edit Record"] });
     $scope.log.push({ version: "0.1.3.3", log: ["Updated thirds libraries for new Chrome Store policy"] });
     $scope.log.push({ version: "0.1.3.2", log: ["Available entity logical name and guid in the button bar"] });
     $scope.log.push({ version: "0.1.3.1", log: ["USD Quick Access for manage Unified Service Desk configurations", "Available HUD now in form, grid and ribbon pages", "Filter solution list by name"] });

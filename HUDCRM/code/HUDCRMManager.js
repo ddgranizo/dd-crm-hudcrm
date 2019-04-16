@@ -48,6 +48,7 @@ function startInitialing() {
                 $scope.$on('clickToolbar_Shortcut_Solutions', function (event, data) { $scope.showUiSolutionsMenuDialog($scope); });
                 $scope.$on('clickToolbar_Shortcut_Webresources', function (event, data) { $scope.showUiWebresourcesMenuDialog($scope, crmRepositoryService); });
                 $scope.$on('clickToolbar_Tools_EditRecord', function (event, data) { $scope.initializeEditRecord(); });
+                $scope.$on('clickToolbar_Tools_CreateRecord', function (event, data) { $scope.initializeCreateRecord(); });
                 $scope.$on('clickToolbar_Tools_QueryConstructor', function (event, data) { $scope.showUiQueryConstructorDialog($scope, crmRepositoryService, $mdSidenav); });
                 $scope.$on('clickToolbar_Tools_CountRecord', function (event, data) { $scope.showUiCountRecordsDialog($scope, crmRepositoryService); });
                 $scope.$on('clickToolbar_Tools_FetchXML', function (event, data) { $scope.showUiFetchXMLMenuDialog($scope, crmRepositoryService); });
@@ -59,6 +60,12 @@ function startInitialing() {
                     $scope.showUiEditRecordDialog($scope, $timeout, crmRepositoryService, entity, id, $scope.editRecordHistory);
                 }
 
+
+                $scope.initializeCreateRecord = function () {
+                    var entity = HUDCRM_CORE.getEntityProperties() != null ? HUDCRM_CORE.getEntityProperties()["name"] : null;
+                    $scope.showUiCreateRecordDialog($scope, $timeout, crmRepositoryService, entity);
+                }
+
                 $scope.loadingSolutions = true;
                 $scope.solutions = null;
                 $scope.loadingWebresources = true;
@@ -68,6 +75,9 @@ function startInitialing() {
                 $scope.loadingMetadataEntity = true;
                 $scope.metadataEntities = null;
                 $scope.loadAsync = function () {
+
+
+
                     //preapre webresoures
                     var uiWebresources = $scope.webresources; //ui
                     var headerWebresources = HUDCRM_COMMONFUNCTIONS.completeWebResources(); //header of webpage
@@ -331,7 +341,7 @@ function startInitialing() {
                             '</md-select>',
                             '</div>',
                             '<div ng-show="selectedConfigId!=0">',
-                            
+
                             '<md-button class="md-icon-button" ng-click="openConfiguration(selectedConfigId)" aria-label="Close">',
                             '<md-tooltip md-z-index="999999">Open configuration in CRM</md-tooltip>',
                             '<md-icon md-svg-src="img/icons/ic_launch_black_24px.svg"></md-icon>',
@@ -1835,6 +1845,778 @@ function startInitialing() {
                         },
                     });
                 }
+                $scope.showUiCreateRecordDialog = function ($mainScope, $timeout, crmRepositoryService, entity, id, history) {
+                    $mdDialog.show({
+                        parent: angular.element(document.body),
+                        //clickOutsideToClose: true,
+                        template: ['<md-dialog  aria-label="Edit record">',
+                            '<form ng-cloak >',
+                            '<md-toolbar layout="row" >',
+                            '<div class="md-toolbar-tools">',
+                            '<div ng-show="raiseSuccess" layout="row"><md-icon style="color: #4CFF4C; " md-svg-src="img/icons/ic_check_circle_white_24px.svg"></md-icon><h4 style="margin-right: 30px">Created!</h4></div>',
+                            '<md-button ng-click="doShowMenuCreate()" ng-if="modifications.length>0" class="md-fab md-mini" aria-label="create">{{modifications.length}}</md-button>',
+                            '<md-button ng-if="showMenuCreate" class="md-icon-button" ng-click="back()" aria-label="back">',
+                            '<md-icon md-svg-src="img/icons/ic_keyboard_arrow_left_white_24px.svg"></md-icon>',
+                            '</md-button>',
+                            '<div layout="row">',
+                            '<h4 style="margin-right: 10px" >Create record: </h4>',
+                            '<span ng-if="currentEntity!=null">',
+                            '<h4>{{currentEntity}}</h4>',
+                            '</span>',
+                            '<div ng-show="lastRecordCreatedId!=null" layout="row" style="margin-left: 6px;">',
+                            '<h4>Last record created: {{lastRecordCreatedId}}</h4>',
+                            '<md-icon ng-click="navigateToRecordJustCreated()" style="margin-left:6px; margin-right:6px" class="icon-clickable" md-svg-src="img/icons/ic_launch_black_24px.svg"></md-icon>',
+                            '</div>',
+                            '</div>',
+                            '<span flex></span>',
+                            '<md-button class="md-icon-button" ng-click="cancel()" aria-label="Close">',
+                            '<md-icon md-svg-src="img/icons/ic_close_24px.svg"></md-icon>',
+                            '</md-button>',
+                            '</div>',
+                            '</md-toolbar>',
+                            '<md-dialog-content ng-if="showMenuCreate" style="width:1000px; max-width:1000px; max-height:400px;" >',
+                            '<table  class="table table-hover table-mc-light-blue">',
+                            '<thead>',
+                            '<tr style="color: black">',
+                            '<th><h5>#</h5></th>',
+                            '<th><h5>Display name</h5></th>',
+                            '<th><h5>Logical name</h5></th>',
+                            '<th><h5>Type</h5></th>',
+                            '<th><h5>Value</h5></th>',
+                            '<th><h5>Remove</h5></th>',
+                            '</tr>',
+                            '</thead>',
+                            '<tbody>',
+                            '<tr ng-repeat="modificacion in modifications">',
+                            '<td>{{$index+1}}</td>',
+                            '<td>{{modificacion.attribute.displayName}}</td>',
+                            '<td>{{modificacion.attribute.logicalName}}</td>',
+                            '<td>{{modificacion.attribute.type}}</td>',
+                            '<td>{{getNewValueDisplay(modificacion.attribute)}}</td>',
+                            '<td><md-icon ng-click="removeModification(modificacion.attribute.logicalName)" class="icon-clickable" md-svg-src="img/icons/ic_delete_grey_24px.svg"></md-icon></td>',
+                            '</tr>',
+                            '</tbody>',
+                            '</table>',
+                            '</md-dialog-content>',
+                            '<md-dialog-content ng-if="!showMenuCreate" style="width:1000px; max-width:1000px; max-height:400px;" >',
+                            '<div ng-show="loadingEntities()" layout="row" layout-sm="column" layout-align="space-around">',
+                            '<md-progress-circular md-mode="indeterminate"></md-progress-circular>',
+                            '</div>',
+                            '<div ng-if="!loadingEntities()" >',
+                            '<div layout="row">',
+                            '<h4 style="padding-left:8px;padding-right:8px">Search record:</h4>',
+                            '<div flex><input-autocomplete-entities selected="startingEntity" get-label="getLabelEntity(item)" filter-fn="filterFnEntities(item,query)" changed="entityChanged(item)" key="Select an entity" items="entities()"></input-autocomplete-entities></div>',
+                            /* '<div flex ng-if="currentEntity!=null">',
+                            '<loading-small show="loadingPrimaryField" key="Loading attributes..."></loading-small>',
+                            '<input-autocomplete-lookup selected="startingId" ng-if="!loadingPrimaryField" query-promise="queryFunction(query)" get-label="getLabelRecord(item)" changed="recordChanged(item)" key="Search record or set GUID"></input-autocomplete-lookup>',
+                            '</div>', */
+                            '</div>', //row
+
+                            '<div >',
+
+                            '<div>',
+                            '<md-tabs md-dynamic-height md-border-bottom>',
+                            '<md-tab label="Attributes"   md-on-select="clickTab(1)">',
+
+                            '<md-input-container  class="md-block" style="width:100%; padding-left:10px; padding-right:10px; margin:0px; margin-top: 10px" > ',
+                            '<label>Filter</label>',
+                            '<input style="font-size: 16px" ng-model="inputData.filter">',
+                            '</md-input-container>',
+                            '<table  class="table table-hover table-mc-light-blue">',
+                            '<thead>',
+                            '<tr style="color: black">',
+                            '<th><h5>Display name</h5></th>',
+                            '<th><h5>Logical name</h5></th>',
+                            '<th><h5>Type</h5></th>',
+                            '<th><h5>Value</h5></th>',
+                            '</tr>',
+                            '</thead>',
+                            '<tbody>',
+                            '<tr ng-click="edit(attribute)" style="cursor: pointer" ng-repeat="attribute in attributes()">',
+                            '<td>{{attribute.displayName}}</td>',
+                            '<td>{{attribute.logicalName}}</td>',
+                            '<td>{{attribute.type}}</td>',
+                            '<td ng-if="getIfModificated(attribute)">',
+                            '<md-icon ng-click="removeModification(attribute.logicalName)" style="margin-right:6px" class="icon-clickable-red" md-svg-src="img/icons/ic_cached_black_24px.svg"></md-icon>',
+                            '{{getNewValueDisplay(attribute)}}',
+                            '</td>',
+                            '<td ng-if="!getIfModificated(attribute)">',
+                            '',
+                            '<md-icon ng-if="getIfSearchableLookup(attribute)" ng-click="navigateInBrowser(getEntityForLookup(attribute), getIdForLookup(attribute))" style="margin-left:6px" class="icon-clickable" md-svg-src="img/icons/ic_launch_black_24px.svg"></md-icon>',
+
+                            '</td>',
+                            '</tr>',
+                            '</tbody>',
+                            '</table>',
+
+                            '</md-tab>',
+
+                            '</md-tabs>',
+                            '</div>',
+                            '</div>',
+
+                            '</div>',
+                            '</md-dialog-content>',
+                            '</form>',
+
+                            '<div layout="row" ng-show="editing && !showMenuCreate">',
+                            '<div style="text-align:right; padding-right:6px;margin-left: 6px"><h4 style=" margin-top: 16px;">Edit attribute:</h4></div>',
+                            '<div flex style="maring-top:6px;">',
+                            '<div ng-if="!cannotBeModified">',
+                            '<input-text ng-if="checkType(currentAttribute, \'string\')" value="currentValue.val"></input-text>',
+                            '<input-text ng-if="checkType(currentAttribute, \'entityname\')" value="currentValue.val"></input-text>',
+                            '<input-text ng-if="checkType(currentAttribute, \'bigint\')" value="currentValue.val"></input-text>',
+                            '<input-select ng-if="checkType(currentAttribute, \'boolean\')"  value="currentValue.val" options="getOptions(currentAttribute)" ></input-select>',
+                            '<input-select ng-if="checkType(currentAttribute, \'picklist\')"  value="currentValue.val[\'Value\']" options="getOptions(currentAttribute)" ></input-select>',
+                            '<input-select ng-if="checkType(currentAttribute, \'state\')"  value="currentValue.val[\'Value\']" options="getOptions(currentAttribute)" ></input-select>',
+                            '<input-select ng-if="checkType(currentAttribute, \'status\')"  value="currentValue.val[\'Value\']" options="getOptions(currentAttribute)" ></input-select>',
+                            '<input-decimal ng-if="checkType(currentAttribute, \'decimal\')"  value="currentValue.val" precision="getPrecision(currentAttribute)"></input-decimal>',
+                            '<input-float ng-if="checkType(currentAttribute, \'double\')"  value="currentValue.val" precision="getPrecision(currentAttribute)"></input-float>',
+                            '<input-integer ng-if="checkType(currentAttribute, \'integer\')"  value="currentValue.val"></input-integer>',
+                            '<input-decimal ng-if="checkType(currentAttribute, \'money\')"  value="currentValue.val[\'Value\']" precision="4"></input-decimal>',
+                            '<input-area ng-if="checkType(currentAttribute, \'memo\')"  value="currentValue.val"></input-area>',
+                            '<input-datetime ng-if="checkType(currentAttribute, \'datetime\')" date-only="getDateonly(currentAttribute)" value="currentValue.val"></input-datetime>',
+                            '<div ng-if="checkType(currentAttribute, \'lookup\') || checkType(currentAttribute, \'owner\')">',
+                            '<input-autocomplete-lookup selected="currentLookupValue" ng-if="!loadingMetadataEntityForLookup" query-promise="queryFunctionForEditRecord(query, currentAttribute)" get-label="getLabelRecord(item)" changed="editLookupValueChanged(item)" key="Search record or set GUID"></input-autocomplete-lookup>',
+                            '<div ng-show="loadingMetadataEntityForLookup" style="margin-top: 12px" layout="row" layout-sm="column" layout-align="space-around"><md-progress-circular md-mode="indeterminate" md-diameter="26" ></md-progress-circular></div>',
+                            '</div>',
+
+                            '</div>',
+                            '<div ng-if="cannotBeModified"><h4 style=" margin-top: 16px;">Selected attribute cannot be modified</h4></div>',
+                            '</div>',
+                            '<md-button class="md-raised" ng-if="!cannotBeModified" style="width: auto;" ng-click="saveModification()" ng-disabled="buttonSaveDisabled()">Save</md-button>',
+                            '<md-button class="md-raised" style="width: auto;" ng-click="cancelEdit()">Cancel</md-button>',
+                            '</div>',
+                            '<div layout="row"  ng-if="!error && showMenuCreate && modifications.length>0 && showCreateButton">',
+                            '<span flex></span>',
+                            '<h4 style="margin-top: 16px; padding-right: 6px;">{{messageCreateState}}</h4>',
+                            '<div ng-show="creating" style="margin-top: 12px; margin-right:10px" layout="row" layout-sm="column" layout-align="space-around"><md-progress-circular md-mode="indeterminate" md-diameter="26" ></md-progress-circular></div>',
+                            '<input-bool  key="Reset modified values after creation" value="resetModificationsAfterCreation" handler="changedResetModificationsAfterCreation(value)" ></input-bool>',
+                            '<md-button ng-if="!creating" class="md-raised" style="width: auto;" ng-click="create()">Create</md-button>',
+                            '</div>',
+                            '<div layout="row"  ng-if="error">',
+                            '<span flex></span>',
+                            '<h4 style="margin-top: 16px; padding-right: 6px; color:red">Error: {{messageCreateError}}</h4>',
+                            '<md-button class="md-raised" style="width: auto;" ng-click="okError()">Ok</md-button>',
+                            '</div>',
+                            '<div layout="row"  ng-if="confirmCreate">',
+                            '<span flex></span>',
+                            '<h4 style="margin-top: 16px; padding-right: 6px;">All this modifications will be saved in Database. ¿Do you want to continue?</h4>',
+                            '<md-button class="md-raised" style="width: auto;" ng-click="cancelConfirmCreate()">Cancel</md-button>',
+                            '<md-button class="md-raised" style="width: auto;" ng-click="doConfirmCreate()">Continue</md-button>',
+                            '</div>',
+                            '</md-dialog>'].join("")
+                        ,
+
+                        controller: function ($scope, $mdDialog) {
+
+
+
+
+                            $scope.navigateToRecordJustCreated = function () {
+                                $scope.navigateInBrowser($scope.currentEntity, $scope.lastRecordCreatedId);
+                            }
+
+                            $scope.lastRecordCreated = null;
+
+                            $scope.generalNavigationInBrowser = function () {
+                                var id = $scope.currentRecord["Id"];
+                                var entity = $scope.currentEntity;
+
+                                $scope.navigateInBrowser(entity, id);
+                            }
+
+                            $scope.back = function () {
+                                if ($scope.showMenuCreate) {
+                                    $scope.showMenuCreate = false;
+                                    $scope.showCreateButton = false;
+                                }
+                            }
+
+                            $scope.changedResetModificationsAfterCreation = function (value) {
+                                $scope.resetModificationsAfterCreation = value;
+                                console.log($scope.resetModificationsAfterCreation);
+                            }
+
+                            $scope.showGeneralNavigation = function () {
+                                return $scope.currentRecord != null && $scope.currentRecord["Id"] != null && $scope.currentEntity != null;
+                            }
+
+
+                            $scope.navigateInBrowser = function (entity, id) {
+                                HUDCRM_TOOL.navigateRecordWithEntityName(entity, id);
+                            }
+
+                            $scope.clickTab = function (tab) {
+                                if (tab == 1) { //attributes
+
+                                } else {  //relatedRecods
+                                    $scope.editing = false;
+                                }
+                            }
+
+                            $scope.getEntityForLookup = function (attribute) {
+                                if (attribute["type"] == "Owner") {
+                                    return "systemuser";
+                                }
+                                return attribute["relatedEntity"];
+
+                            }
+                            $scope.getIdForLookup = function (attribute) {
+                                var logicalName = attribute["logicalName"];
+                                var value = $scope.getValue(logicalName);
+                                return value["Id"];
+                            }
+
+                            $scope.getIfSearchableLookup = function (attribute) {
+                                var val = null;//$scope.displayValue(attribute);
+                                if (val == null || val == "") {
+                                    return false;
+                                }
+                                return $scope.checkType(attribute, "lookup") || $scope.checkType(attribute, "owner");
+                            }
+
+                            $scope.getIfModificated = function (attribute) {
+                                for (var i = 0; i < $scope.modifications.length; i++) {
+                                    if ($scope.modifications[i]["attribute"]["logicalName"] == attribute["logicalName"]) {
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            }
+
+                            $scope.removeModification = function (logicalName) {
+                                for (var i = 0; i < $scope.modifications.length; i++) {
+                                    if ($scope.modifications[i]["attribute"]["logicalName"] == logicalName) {
+                                        $scope.modifications.splice(i, 1);
+                                        break;
+                                    }
+                                }
+                            }
+
+                            $scope.editLookupValueChanged = function (item) {
+                                $scope.currentValue.val = item;
+                            }
+
+                            $scope.okError = function () {
+                                $scope.error = false;
+                            }
+
+                            $scope.hideRaiseSuccess = function () {
+                                $scope.raiseSuccess = false;
+                            }
+
+                            $scope.doConfirmCreate = function () {
+                                $scope.confirmCreate = false;
+                                $scope.showCreateButton = true;
+                                $scope.messageCreateState = "Creating...";
+                                $scope.creating = true;
+                                var modifiedAttributes = $scope.getAttributesForCreate($scope.modifications);
+                                var entity = $scope.currentEntity;
+                                console.log("Attributes:");
+                                console.log(modifiedAttributes);
+
+                                crmRepositoryService.createRecord(entity, modifiedAttributes).then(function (id) {
+                                    console.log(id);
+                                    $scope.creating = false;
+                                    $scope.lastRecordCreatedId = id;
+                                    $scope.messageCreateState = null;
+                                    if ($scope.resetModificationsAfterCreation) {
+                                        $scope.showMenuCreate = false;
+                                        $scope.showCreateButton = false;
+                                        $scope.modifications = Array();
+                                    }
+                                    $scope.raiseSuccess = true;
+                                    $timeout($scope.hideRaiseSuccess, 5000);
+
+                                }, function (e) {
+                                    $scope.creating = false;
+                                    $scope.messageCreateState = null;
+                                    var error = HUDCRM_SOAP.deserializeFaultString(e.data);
+                                    $scope.error = true;
+                                    $scope.messageCreateError = error;
+                                    console.error(error);
+                                });
+                                console.log(modifiedAttributes);
+                            }
+                            $scope.create = function () {
+                                $scope.confirmCreate = true;
+                                $scope.showCreateButton = false;
+
+                            }
+                            $scope.cancelConfirmCreate = function () {
+                                $scope.confirmCreate = false;
+                                $scope.showCreateButton = true;
+
+                            }
+
+                            $scope.getAttributesForCreate = function (modifications) {
+                                var attrs = Array();
+                                for (var i = 0; i < modifications.length; i++) {
+                                    var attribute = modifications[i]["attribute"];
+                                    var value = modifications[i]["value"];
+                                    var logicalName = attribute["logicalName"];
+                                    var type = attribute["type"];
+                                    if (type == "Lookup" || type == "Owner") {
+                                        var related = type != "Owner" ? attribute["relatedEntity"] : "systemuser";
+                                        var id = "";
+                                        if (typeof value != 'undefined') {
+                                            id = value["id"];
+                                        }
+                                        attrs.push({ type: type, logicalName: logicalName, val: id, entityRelated: related });
+                                    } else if (type == "Picklist" || type == "State" || type == "Status") {
+                                        var option = "";
+                                        if (typeof value != 'undefined') {
+                                            option = value["Value"];
+                                        }
+                                        attrs.push({ type: type, logicalName: logicalName, val: option });
+                                    } else if (type == "Boolean") {
+                                        attrs.push({ type: type, logicalName: logicalName, val: value });
+                                    } else if (type == "Money") {
+                                        var ammount = "";
+                                        if (typeof value != 'undefined') {
+                                            ammount = value["Value"];
+                                        }
+                                        attrs.push({ type: type, logicalName: logicalName, val: ammount });
+                                    } else if (type == "Memo") {
+                                        attrs.push({ type: type, logicalName: logicalName, val: value });
+                                    } else {
+                                        attrs.push({ type: type, logicalName: logicalName, val: value });
+                                    }
+                                }
+                                return attrs;
+                            }
+
+
+                            $scope.getNewValueDisplay = function (attribute) {
+                                var modification = $scope.getModification(attribute);
+
+                                if (typeof modification == 'undefined' || modification == null) {
+                                    return null;
+                                }
+                                var type = attribute["type"];
+                                if (type == "Lookup" || type == "Owner") {
+                                    return modification["value"] + " (" + modification["id"] + ")";
+                                } else if (type == "Picklist" || type == "State" || type == "Status") {
+                                    return $scope.getDisplayValueOfOptionSet(attribute.options, modification["Value"]);
+                                } else if (type == "Boolean") {
+                                    return $scope.getDisplayValueOfOptionSet(attribute.options, modification);
+                                } else if (type == "Money") {
+                                    return modification["Value"];
+                                } else {
+                                    return modification;
+                                }
+                            }
+
+                            $scope.getDisplayValueOfOptionSet = function (options, value) {
+                                for (var i = 0; i < options.length; i++) {
+                                    if (options[i]["value"].toString() == value.toString()) {
+                                        return options[i]["display"]
+                                    }
+                                }
+                                return null;
+                            }
+
+                            $scope.getModification = function (attribute) {
+                                for (var i = 0; i < $scope.modifications.length; i++) {
+                                    if ($scope.modifications[i]["attribute"]["logicalName"] == attribute["logicalName"]) {
+                                        return $scope.modifications[i]["value"];
+                                    }
+                                }
+                                return null;
+                            }
+
+
+                            $scope.queryFunctionForEditRecord = function (query, attribute) {
+
+                                var type = attribute["type"];
+
+
+                                if ($scope.currentPrimaryFieldEditValue == null || $scope.currentPrimaryFieldEditValue == "") {
+                                    return null;
+                                }
+                                if ((typeof (attribute["relatedEntity"]) == 'undefined' || attribute["relatedEntity"] == null) && type != "Owner") {
+                                    return null;
+                                }
+
+                                var entity = type != "Owner" ? attribute["relatedEntity"] : "systemuser";
+                                var primaryField = $scope.currentPrimaryFieldEditValue;
+
+                                var pattNoBraces = new RegExp(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/);
+                                var pattBraces = new RegExp(/^\{?[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}‌​\}?$/);
+                                var resNoBraces = pattNoBraces.test(query);
+                                var resBraces = pattBraces.test(query);
+                                if (resNoBraces || resBraces) {
+                                    var promise = crmRepositoryService.retrieveRecordPrimaryFieldValue(query, entity, primaryField);
+                                    return promise.then(function (resutls) {
+                                        var options = getOptionsForLookupSearchSingleRecord(resutls, "id", "value", primaryField);
+                                        return options;
+                                    }, function () {
+                                        return options = Array();
+                                    });
+                                } else {
+                                    var promise = crmRepositoryService.requestSearchForLookup(query, entity, primaryField);
+                                    return promise.then(function (resutls) {
+                                        var options = getOptionsForLookupSearch(resutls, "id", "value", primaryField);
+                                        return options;
+                                    }, function (e) { console.error(e); });
+                                }
+                            }
+
+
+                            $scope.doShowMenuCreate = function () {
+                                $scope.showMenuCreate = true;
+                                $scope.showCreateButton = true;
+                                $scope.confirmCreate = false;
+                                $scope.error = false;
+                            }
+
+                            $scope.getDateonly = function (attribute) {
+                                return attribute["dateonly"];
+                            }
+                            $scope.getPrecision = function (attribute) {
+                                return attribute["precision"];
+                            }
+                            $scope.getOptions = function (attribute) {
+                                return attribute["options"];
+                            }
+
+                            $scope.saveModification = function () {
+                                $scope.upsertValueInModifications($scope.currentAttribute, $scope.currentValue.val);
+                                console.log($scope.modifications);
+                                $scope.editing = false;
+                            }
+
+                            $scope.buttonSaveDisabled = function () {
+                                return false;
+                            }
+
+                            $scope.upsertValueInModifications = function (attribute, newValue) {
+                                var found = false;
+                                var attrName = attribute["logicalName"];
+                                for (var i = 0; i < $scope.modifications.length; i++) {
+                                    if ($scope.modifications[i]["attribute"]["logicalName"] == attrName) {
+                                        $scope.modifications[i]["value"] = newValue;
+                                        found = true;
+                                    }
+                                }
+                                if (!found) {
+                                    $scope.modifications.push({ attribute: attribute, value: newValue });
+                                }
+                            }
+
+                            $scope.cancelEdit = function () {
+                                $scope.cannotBeModified = false;
+                                $scope.editing = false;
+                                $scope.currentAttribute = null;
+                                $scope.currentValue.val = null;
+                            }
+
+                            $scope.edit = function (attribute) {
+                                console.log("Editing....");
+                                console.log(attribute);
+                                $scope.cannotBeModified = false;
+                                $scope.editing = true;
+                                $scope.currentAttribute = null;
+                                $scope.currentValue.val = null;
+
+                                $scope.currentAttribute = attribute;
+                                var val = null;
+
+                                var type = attribute["type"];
+
+                                if (type == "Uniqueidentifier" || type == "Virtual") {
+                                    $scope.cannotBeModified = true;
+                                    return;
+                                }
+
+                                if (type == "Lookup" || type == "Owner") {
+                                    var moreThanOneRelated = attribute["moreThanOneRelated"];
+                                    if (moreThanOneRelated) {
+                                        $scope.cannotBeModified = true;
+                                        return;
+                                    }
+                                    console.log(attribute);
+                                    $scope.loadingMetadataEntityForLookup = true;
+
+                                    var entityName = type == "Lookup" ? attribute["relatedEntity"] : "systemuser";
+                                    console.log("Downloading meta for " + entityName);
+                                    var cached = $mainScope.getCachedMetadataFields(entityName);
+                                    if (cached == null) {
+                                        crmRepositoryService.retrieveMetadataFieldsEntity(entityName).then(function (fields) {
+                                            $mainScope.addCachedMetadataFields(entityName, fields);
+                                            $scope.currentPrimaryFieldEditValue = fields["PrimaryNameAttribute"];
+                                            $scope.loadingMetadataEntityForLookup = false;
+                                        }, function (e) { console.error(e); });
+                                    } else {
+                                        $scope.currentPrimaryFieldEditValue = cached["PrimaryNameAttribute"];
+                                        $scope.loadingMetadataEntityForLookup = false;
+                                    }
+                                }
+
+                                if (val == null) {
+                                    $scope.currentLookupValue = null;
+                                } else {
+                                    $scope.currentLookupValue = { "value": val["Name"], "id": val["Id"] };
+                                }
+
+                                $scope.currentValue.val = val;
+                            }
+
+
+                            $scope.checkType = function (attr, type) {
+                                return attr != null && angular.lowercase(attr["type"]) == angular.lowercase(type);
+                            }
+
+                            $scope.attributes = function () {
+                                var value = angular.lowercase($scope.inputData.filter);
+                                if (value == null || value == "") {
+                                    return $scope.entityMetadata["attributes"];
+                                }
+                                return $scope.entityMetadata["attributes"].filter(function (attribute) {
+
+                                    var inDisplay = checkIfMatch(attribute, "displayName", value);
+                                    if (inDisplay) return true;
+                                    var inLogical = checkIfMatch(attribute, "logicalName", value);
+                                    if (inLogical) return true;
+                                    var inType = checkIfMatch(attribute, "type", value);
+                                    if (inType) return true;
+                                    /* var formatted = angular.lowercase($scope.displayValue(attribute));
+                                    if (formatted != null && typeof (formatted) != 'object') {
+                                        if (formatted.indexOf(value) >= 0) {
+                                            return true;
+                                        }
+                                    } */
+                                    return false;
+                                });
+                            }
+                            function checkIfMatch(attr, property, value) {
+                                if (typeof attr[property] != 'undefined' && attr[property] != null) {
+                                    if (angular.lowercase(attr[property]).indexOf(value) > -1) {
+                                        return true;
+                                    }
+                                }
+                            }
+
+                            $scope.displayValue = function (attribute) {
+                                var logicalName = attribute["logicalName"];
+                                var type = attribute["type"];
+                                var value = $scope.getFormattedValue(logicalName);
+                                if (type == "Lookup" || type == "Owner" || type == "Customer") {
+                                    if (typeof value == 'object' && value != null) {
+                                        return value["Name"] + " (" + value["Id"] + ")";
+                                    }
+                                }
+                                return value;
+                            }
+
+                            $scope.value = function (attribute) {
+                                var logicalName = attribute["logicalName"];
+                                var value = $scope.getValue(logicalName);
+                                return value;
+                            }
+
+                            $scope.getValue = function (logicalName) {
+                                for (var i = 0; i < $scope.currentRecord["Attributes"].length; i++) {
+                                    var attribute = $scope.currentRecord["Attributes"][i];
+                                    if (attribute["key"] == logicalName) {
+                                        return attribute["value"];
+                                    }
+                                }
+                                return null;
+                            }
+
+                            $scope.getFormattedValue = function (logicalName) {
+                                for (var i = 0; i < $scope.currentRecord["FormattedValues"].length; i++) {
+                                    var attribute = $scope.currentRecord["FormattedValues"][i];
+                                    if (attribute["key"] == logicalName) {
+                                        return attribute["value"];
+                                    }
+                                }
+                                return null;
+                            }
+
+                            $scope.recordChanged = function (record) {
+
+                                $scope.editing = false;
+                                $scope.modifications = Array();
+                                $scope.id = null;
+                                $scope.loadingRecord = true;
+                                if (typeof (record) == 'undefined') {
+                                    $scope.currentRecord = null;
+                                    return;
+                                }
+
+                                $scope.id = record["id"];
+                                crmRepositoryService.retrieveRecord($scope.id, $scope.currentEntity).then(function (record) {
+                                    $scope.currentRecord = record;
+                                    $scope.loadingRecord = false;
+                                }, function (e) { console.log(e); });
+                            }
+
+
+                            $scope.queryFunction = function (query) {
+                                if ($scope.currentEntityPrimaryField == null || $scope.currentEntityPrimaryField == "") {
+                                    return null;
+                                }
+                                var pattNoBraces = new RegExp(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/);
+                                var pattBraces = new RegExp(/^\{?[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}‌​\}?$/);
+                                var resNoBraces = pattNoBraces.test(query);
+                                var resBraces = pattBraces.test(query);
+                                if (resNoBraces || resBraces) {
+                                    var promise = crmRepositoryService.retrieveRecordPrimaryFieldValue(query, $scope.currentEntity, $scope.currentEntityPrimaryField);
+                                    return promise.then(function (resutls) {
+                                        var options = getOptionsForLookupSearchSingleRecord(resutls, "id", "value", $scope.currentEntityPrimaryField);
+                                        return options;
+                                    }, function () {
+                                        return options = Array();
+                                    }, function (e) { console.error(e); });
+
+                                } else {
+                                    var promise = crmRepositoryService.requestSearchForLookup(query, $scope.currentEntity, $scope.currentEntityPrimaryField);
+                                    return promise.then(function (resutls) {
+                                        var options = getOptionsForLookupSearch(resutls, "id", "value", $scope.currentEntityPrimaryField);
+                                        return options;
+                                    }, function (e) { console.error(e); });
+                                }
+                            }
+
+
+                            function getOptionsForLookupSearchSingleRecord(deserializedObj, keyAttribute, displayAttribute, primaryField) {
+                                var o = Object();
+                                o[keyAttribute] = deserializedObj.Id;
+                                for (var i = 0; i < deserializedObj.Attributes.length; i++) {
+                                    var result = deserializedObj.Attributes[i];
+                                    if (result["key"] == primaryField) {
+                                        o[displayAttribute] = result["value"];
+                                    }
+                                }
+                                return [o];
+                            }
+
+                            function getOptionsForLookupSearch(deserializedObj, keyAttribute, displayAttribute, primaryField) {
+                                var options = Array();
+                                for (var i = 0; i < deserializedObj.Entities.length; i++) {
+                                    var result = deserializedObj.Entities[i];
+                                    var obj = Object();
+                                    obj[keyAttribute] = result.id;
+                                    obj[displayAttribute] = result.values[primaryField];
+                                    options.push(obj);
+                                }
+                                return options;
+                            }
+
+                            $scope.getLabelRecord = function (record) {
+                                if (typeof record["value"] == 'undefined' || record["value"] == null || record["value"] == "") {
+                                    return record["id"];
+                                }
+                                return record["value"];
+                            }
+
+                            $scope.getLabelEntity = function (entity) {
+                                if (typeof (entity["displayName"]) != 'undefined') {
+                                    return entity["displayName"];
+                                }
+                                return entity["logicalName"];
+                            }
+
+                            $scope.entityChanged = function (item) {
+                                $scope.editing = false;
+                                if (typeof item == 'undefined') {
+                                    $scope.currentEntity = null;
+                                    return;
+                                }
+                                $scope.currentEntity = item["logicalName"];
+                                $scope.loadingPrimaryField = true;
+                                var entityName = $scope.currentEntity;
+                                var cached = $mainScope.getCachedMetadataFields(entityName);
+                                if (cached == null) {
+                                    crmRepositoryService.retrieveMetadataFieldsEntity(entityName).then(function (fields) {
+                                        $mainScope.addCachedMetadataFields(entityName, fields);
+                                        $scope.primaryFieldLoaded(fields);
+
+                                    }, function (e) { console.error(e); });
+                                } else {
+                                    $scope.primaryFieldLoaded(cached);
+                                }
+                            }
+
+
+                            $scope.primaryFieldLoaded = function (entity) {
+                                $scope.relatedRecords = null;
+                                $scope.currentEntityPrimaryField = entity["PrimaryNameAttribute"];
+                                $scope.entityMetadata = entity;
+                                $scope.loadingPrimaryField = false;
+                            }
+
+
+                            $scope.filterFnEntities = function (entity, query) {
+                                var text = entity["logicalName"];
+                                if (typeof (entity["displayName"]) != 'undefined') {
+                                    text += entity["displayName"];
+                                }
+                                return (angular.lowercase(text).indexOf(query) >= 0);
+                            }
+
+                            $scope.loadingEntities = function () { return $mainScope.loadingMetadataEntities; }
+                            $scope.entities = function () { return $mainScope.metadataEntities; }
+
+
+                            $scope.cancel = function () {
+                                $mdDialog.cancel();
+                            };
+
+
+
+                            $scope.initializeCreateRecord = function (entity) {
+                                console.log("Initializing for " + entity);
+                                $scope.lastRecordCreatedId = null;
+                                $scope.modifications = Array();
+                                $scope.resetModificationsAfterCreation = true;
+
+                                $scope.currentLookupValue = null;
+                                $scope.inputData = { filter: null };
+                                $scope.currentValue = { val: null };
+                                $scope.currentEntity = null;
+                                if (typeof entity != 'undefined' && entity != null) {
+                                    $scope.currentEntity = entity;
+
+                                    var entityName = $scope.currentEntity;
+                                    var objEntity = $scope.getEntityObject(entityName);
+                                    $scope.startingEntity = objEntity == null ? { "logicalName": entityName } : objEntity;
+                                    var cached = $mainScope.getCachedMetadataFields(entityName);
+                                    if (cached == null) {
+                                        crmRepositoryService.retrieveMetadataFieldsEntity(entityName).then(function (fields) {
+                                            $mainScope.addCachedMetadataFields(entityName, fields);
+                                            $scope.primaryFieldLoaded(fields);
+                                        }, function (e) { console.log(e); })
+                                    } else {
+                                        $scope.primaryFieldLoaded(cached);
+                                    }
+                                }
+
+
+                            }
+
+                            $scope.getEntityObject = function (logicalname) {
+                                var entities = $scope.entities();
+                                if (entities == null) {
+                                    return null;
+                                }
+                                for (var i = 0; i < entities.length; i++) {
+                                    if (entities[i]["logicalName"] == logicalname) {
+                                        return entities[i];
+                                    }
+                                }
+                                return null;
+                            }
+
+
+                            $scope.initializeCreateRecord(entity);
+
+                        },
+                    });
+                }
                 $scope.showUiEditRecordDialog = function ($mainScope, $timeout, crmRepositoryService, entity, id, history) {
                     $mdDialog.show({
                         parent: angular.element(document.body),
@@ -1851,7 +2633,7 @@ function startInitialing() {
                             '<md-icon md-svg-src="img/icons/ic_keyboard_arrow_right_white_24px.svg"></md-icon>',
                             '</md-button>',
                             '<md-button ng-click="doShowMenuUpdate()" ng-if="modifications.length>0" class="md-fab md-mini" aria-label="update">{{modifications.length}}</md-button>',
-                            '<div layout="row"><h4 style="margin-right: 10px" >Current record: </h4><span ng-if="currentEntity!=null && currentRecord==null"><h4>{{currentEntity}}</h4></span><span ng-if="currentEntity!=null && currentRecord!=null"><h4>{{currentEntity}}, {{currentRecord.Id}}</h4></span></div>',
+                            '<div layout="row"><md-icon ng-show="showGeneralNavigation()" ng-click="generalNavigationInBrowser()" style="margin-left:6px; margin-right:6px" class="icon-clickable" md-svg-src="img/icons/ic_launch_black_24px.svg"></md-icon><h4 style="margin-right: 10px" >Current record: </h4><span ng-if="currentEntity!=null && currentRecord==null"><h4>{{currentEntity}}</h4></span><span ng-if="currentEntity!=null && currentRecord!=null"><h4>{{currentEntity}}, {{currentRecord.Id}}</h4></span></div>',
                             '<span flex></span>',
                             '<md-button class="md-icon-button" ng-click="cancel()" aria-label="Close">',
                             '<md-icon md-svg-src="img/icons/ic_close_24px.svg"></md-icon>',
@@ -1990,12 +2772,14 @@ function startInitialing() {
                             '<input-text ng-if="checkType(currentAttribute, \'bigint\')" value="currentValue.val"></input-text>',
                             '<input-select ng-if="checkType(currentAttribute, \'boolean\')"  value="currentValue.val" options="getOptions(currentAttribute)" ></input-select>',
                             '<input-select ng-if="checkType(currentAttribute, \'picklist\')"  value="currentValue.val[\'Value\']" options="getOptions(currentAttribute)" ></input-select>',
+                            '<input-select ng-if="checkType(currentAttribute, \'state\')"  value="currentValue.val[\'Value\']" options="getOptions(currentAttribute)" ></input-select>',
+                            '<input-select ng-if="checkType(currentAttribute, \'status\')"  value="currentValue.val[\'Value\']" options="getOptions(currentAttribute)" ></input-select>',
                             '<input-decimal ng-if="checkType(currentAttribute, \'decimal\')"  value="currentValue.val" precision="getPrecision(currentAttribute)"></input-decimal>',
                             '<input-float ng-if="checkType(currentAttribute, \'double\')"  value="currentValue.val" precision="getPrecision(currentAttribute)"></input-float>',
                             '<input-integer ng-if="checkType(currentAttribute, \'integer\')"  value="currentValue.val"></input-integer>',
                             '<input-decimal ng-if="checkType(currentAttribute, \'money\')"  value="currentValue.val[\'Value\']" precision="4"></input-decimal>',
                             '<input-area ng-if="checkType(currentAttribute, \'memo\')"  value="currentValue.val"></input-area>',
-                            '<input-datetime ng-if="checkType(currentAttribute, \'datetime\')" date-only="getDateonly(currentAttribute)"  value="currentValue.val"></input-datetime>',
+                            '<input-datetime ng-if="checkType(currentAttribute, \'datetime\')" date-only="getDateonly(currentAttribute)" value="currentValue.val"></input-datetime>',
                             '<div ng-if="checkType(currentAttribute, \'lookup\') || checkType(currentAttribute, \'owner\')">',
                             '<input-autocomplete-lookup selected="currentLookupValue" ng-if="!loadingMetadataEntityForLookup" query-promise="queryFunctionForEditRecord(query, currentAttribute)" get-label="getLabelRecord(item)" changed="editLookupValueChanged(item)" key="Search record or set GUID"></input-autocomplete-lookup>',
                             '<div ng-show="loadingMetadataEntityForLookup" style="margin-top: 12px" layout="row" layout-sm="column" layout-align="space-around"><md-progress-circular md-mode="indeterminate" md-diameter="26" ></md-progress-circular></div>',
@@ -2035,6 +2819,20 @@ function startInitialing() {
 
                         controller: function ($scope, $mdDialog) {
 
+
+                            $scope.generalNavigationInBrowser = function () {
+                                var id = $scope.currentRecord["Id"];
+                                var entity = $scope.currentEntity;
+
+                                $scope.navigateInBrowser(entity, id);
+                            }
+
+
+                            $scope.showGeneralNavigation = function () {
+                                return $scope.currentRecord != null && $scope.currentRecord["Id"] != null && $scope.currentEntity != null;
+                            }
+
+
                             $scope.navigateInBrowser = function (entity, id) {
                                 HUDCRM_TOOL.navigateRecordWithEntityName(entity, id);
                             }
@@ -2052,7 +2850,7 @@ function startInitialing() {
                                     return "systemuser";
                                 }
                                 return attribute["relatedEntity"];
-                                
+
                             }
                             $scope.getIdForLookup = function (attribute) {
                                 var logicalName = attribute["logicalName"];
@@ -2154,7 +2952,7 @@ function startInitialing() {
                                             id = value["id"];
                                         }
                                         attrs.push({ type: type, logicalName: logicalName, val: id, entityRelated: related });
-                                    } else if (type == "Picklist") {
+                                    } else if (type == "Picklist" || type == "State" || type == "Status") {
                                         var option = "";
                                         if (typeof value != 'undefined') {
                                             option = value["Value"];
@@ -2180,7 +2978,7 @@ function startInitialing() {
 
                             $scope.getNewValueDisplay = function (attribute) {
                                 var modification = $scope.getModification(attribute);
-                                
+
 
                                 if (typeof modification == 'undefined' || modification == null) {
                                     return null;
@@ -2188,7 +2986,7 @@ function startInitialing() {
                                 var type = attribute["type"];
                                 if (type == "Lookup" || type == "Owner") {
                                     return modification["value"] + " (" + modification["id"] + ")";
-                                } else if (type == "Picklist") {
+                                } else if (type == "Picklist" || type == "State" || type == "Status") {
                                     return $scope.getDisplayValueOfOptionSet(attribute.options, modification["Value"]);
                                 } else if (type == "Boolean") {
                                     return $scope.getDisplayValueOfOptionSet(attribute.options, modification);
@@ -2300,7 +3098,7 @@ function startInitialing() {
 
                             $scope.buttonSaveDisabled = function () {
                                 return false;
-                                
+
                             }
 
                             $scope.upsertValueInModifications = function (attribute, newValue) {
@@ -2332,7 +3130,7 @@ function startInitialing() {
 
                                 $scope.currentAttribute = attribute;
                                 var val = $scope.value(attribute);
-                                
+
                                 var type = attribute["type"];
 
                                 if (type == "Uniqueidentifier" || type == "Virtual") {
@@ -2363,7 +3161,7 @@ function startInitialing() {
                                         $scope.loadingMetadataEntityForLookup = false;
                                     }
                                 }
-                                console.log(val);
+
                                 if (val == null) {
                                     $scope.currentLookupValue = null;
                                 } else {
@@ -2375,6 +3173,9 @@ function startInitialing() {
 
 
                             $scope.checkType = function (attr, type) {
+                                if (type == "state") {
+                                    console.log(attr);
+                                }
                                 return attr != null && angular.lowercase(attr["type"]) == angular.lowercase(type);
                             }
 
@@ -2546,7 +3347,6 @@ function startInitialing() {
                                     crmRepositoryService.retrieveMetadataFieldsEntity(entityName).then(function (fields) {
                                         $mainScope.addCachedMetadataFields(entityName, fields);
                                         $scope.loadedRelatedPrimaryField(item, fields);
-
                                     }, function (e) { console.error(e); });
                                 } else {
                                     $scope.loadedRelatedPrimaryField(item, cached);
@@ -4392,6 +5192,18 @@ function startInitialing() {
                 });
             }
 
+            this.createRecord = function (entity, attributes) {
+                var data = HUDCRM_SOAP.SCHEMAS.Create_Record(entity, attributes);
+                console.log(data);
+                //console.log($(data)[0]);
+                var promiseFilter = $http.post(url, data, configCreate);
+                return promiseFilter.then(function (response) {
+                    var data = HUDCRM_SOAP.deserializeCreateResponse(response.data);
+                    return data;
+                });
+            }
+
+
 
             this.updateRecord = function (id, entity, attributes) {
                 var data = HUDCRM_SOAP.SCHEMAS.Update_Record(entity, id, attributes);
@@ -4531,7 +5343,7 @@ function startInitialing() {
             var configRetrieve = getConfig("Retrieve");
             var configExecute = getConfig("Execute");
             var configUpdate = getConfig("Update");
-
+            var configCreate = getConfig("Create");
 
         }]);
 
@@ -4593,6 +5405,7 @@ function startInitialing() {
                 '<md-menu>',
                 '<md-button style="width:auto"  aria-label="menu" class="md-icon-button" ng-click="$mdMenu.open()">Tools</md-button>',
                 '<md-menu-content width="4" ng-mouseleave="$mdMenu.close()">',
+                '<md-menu-item><md-button ng-click="emit(\'clickToolbar_Tools_CreateRecord\');">Create record</md-button></md-menu-item>',
                 '<md-menu-item><md-button ng-click="emit(\'clickToolbar_Tools_EditRecord\');">Edit record</md-button></md-menu-item>',
                 '<md-menu-item><md-button ng-click="emit(\'clickToolbar_Tools_QueryConstructor\');">Query constructor</md-button></md-menu-item>',
                 '<md-menu-item><md-button ng-click="emit(\'clickToolbar_Tools_CountRecord\');">Count records</md-button></md-menu-item>',
@@ -4605,7 +5418,7 @@ function startInitialing() {
                 '<div ng-if="!notInForm"  layout="row">',
                 '<input type="text" key="Logical name" ng-value="entityInfo.name" style="width: 200px; font-size: 20px; color: white; background: transparent; border: 0px; text-align: center;"></input>',
                 '<input type="text" key="Id" ng-value="entityInfo.id" style="width: 420px; font-size: 20px; color: white; background: transparent; border: 0px; text-align: center;"></input>',
-                
+
                 '</div>',//INFO: WEB ETC
                 '</div>',
                 '</md-toolbar>',
@@ -4745,7 +5558,7 @@ function startInitialing() {
             template: ['<md-input-container style="width:100%; padding-left:10px; padding-right:10px; " >',
                 '<label>{{name}}</label>',
                 '<md-select ng-model="value" ng-change="handler({value: value})" aria-label="{{name}}" >',
-                '<md-option ng-repeat="option in options" value="{{option.value}}">{{option.display}}</md-option>',
+                '<md-option ng-repeat="option in options" value="{{option.value}}">({{option.value}}) {{option.display}}</md-option>',
                 '</md-select>',
                 '</md-input-container>'].join(""),
             link: function ($scope, element, attrs) {
@@ -5623,6 +6436,7 @@ function startInitialing() {
             angular.bootstrap(document.getElementById('hud-crm-div'), ['hudApp']);
             HUDCRM_INTER.controller = angular.element($("#hud-crm-div")).scope();
             HUDCRM_UI.scanUi();
+
             if (HUDCRM_CORE.isForm) {
                 HUDCRM_UI.setUi();
             }
@@ -5785,6 +6599,8 @@ var HUDCRM_UI = {
             var version = HUDCRM_CORE.getApplicationVersion();
             HUDCRM_UI.attributes = HUDCRM_CORE.isForm ? HUDCRM_XRM.getAttributes(version) : null;
             HUDCRM_UI.tree = HUDCRM_CORE.isForm ? HUDCRM_XRM.getTree(version) : null;
+
+
             HUDCRM_UI.controlsInTabs = HUDCRM_CORE.isForm ? HUDCRM_XRM.controlsInTabs : null;
             HUDCRM_UI.webResources = HUDCRM_XRM.webResources;
             HUDCRM_INTER.apply(function () { HUDCRM_INTER.controller.setUiScanedObject({ tree: HUDCRM_UI.tree, attributes: HUDCRM_UI.attributes, controlsInTabs: HUDCRM_UI.controlsInTabs, webresources: HUDCRM_UI.webResources }); });
@@ -5792,7 +6608,7 @@ var HUDCRM_UI = {
         } catch (e) {
             console.error(e);
         }
-        
+
     },
     setUi: function () {
         var tree = HUDCRM_UI.tree;
@@ -6197,7 +7013,9 @@ var HUDCRM_CORE = {
         if (HUDCRM_CORE.versionCRM != null) {
             return HUDCRM_CORE.versionCRM;
         }
-        var versionCRM__ = APPLICATION_VERSION;
+        var versionCRM__ = typeof APPLICATION_VERSION != 'undefined' ?
+            APPLICATION_VERSION :
+            Xrm.Utility.getGlobalContext().getVersion().split('.').slice(0, 2).join('.');
         versionCRM__ = parseFloat(versionCRM__);
         HUDCRM_CORE.versionCRM = versionCRM__;
         return HUDCRM_CORE.versionCRM;
@@ -6243,8 +7061,6 @@ var HUDCRM_CORE = {
         if (element == null && version >= 9) {
             HUDCRM_CORE.isForm = false;
             HUDCRM_CORE.targetDivForMainMenu = "stdTable";
-
-            HUDCRM_CORE.isForm = false;
             HUDCRM_CORE.isGrid = true;
             HUDCRM_CORE.isDashboard = false;
         }
@@ -6253,7 +7069,14 @@ var HUDCRM_CORE = {
         if (element == null && version >= 9) {
             HUDCRM_CORE.isForm = false;
             HUDCRM_CORE.targetDivForMainMenu = "mainContainer";
+            HUDCRM_CORE.isGrid = false;
+            HUDCRM_CORE.isDashboard = true;
+        }
+
+        var element = document.getElementById(HUDCRM_CORE.targetDivForMainMenu);
+        if (element == null && version >= 9) {
             HUDCRM_CORE.isForm = false;
+            HUDCRM_CORE.targetDivForMainMenu = "mainContent";
             HUDCRM_CORE.isGrid = false;
             HUDCRM_CORE.isDashboard = true;
         }
